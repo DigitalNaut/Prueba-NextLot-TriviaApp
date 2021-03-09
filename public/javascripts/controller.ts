@@ -20,7 +20,7 @@ function saveFactToDB(fact: Fact, succeed: () => void, fail: (error?: Error) => 
     db.once('open', () => {
       const collection = db.collection("Facts");
 
-      
+
 
       succeed();
     })
@@ -35,12 +35,9 @@ export async function getNewFact(): Promise<Fact> {
       method: "GET",
     });
 
-    const json = apiCall.json();
-
-
     const fact: Fact = {
       status: "OK",
-      fact: json
+      fact: await apiCall.json()
     }
 
     if (fact)
