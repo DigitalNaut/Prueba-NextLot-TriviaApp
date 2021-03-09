@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    "Source Files": true,
+    "trivia-app-client-vite": true
+  }
+}

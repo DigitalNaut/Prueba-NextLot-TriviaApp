@@ -4,9 +4,9 @@
 
 @layer base {
   @font-face {
-    font-family: Krub;
-    font-weight: 200, 400;
-    src: url(https://fonts.gstatic.com/s/krub/v4/sZlGdRyC6CRYbkQiwLBCSoASSf8.woff2) format('woff2');
+    font-family: Lora;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/lora/v17/0QI8MX1D_JOuMw_hLdO6T2wV9KnW-MoFoq92nA.woff2) format('woff2');
   }
   @font-face {
     font-family: Rock Salt;

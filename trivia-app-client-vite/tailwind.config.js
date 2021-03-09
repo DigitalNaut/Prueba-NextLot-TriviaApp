@@ -12,7 +12,7 @@ module.exports = {
   plugins: [],
   theme: {
     fontFamily: {
-      krub: ["Krub", ...defaultTheme.fontFamily.sans],
+      lora: ["Lora", ...defaultTheme.fontFamily.sans],
       rockSalt: ["Rock Salt"],
     },
     colors: {

@@ -2,7 +2,7 @@
   <div
     class="cursor-pointer card"
   >
-    <span class="text-4xl italic text-center text-blue-700 font-rockSalt">
+    <span class="text-3xl italic text-center text-blue-700 font-rockSalt">
       {{ msg }}
     </span>
   </div>
