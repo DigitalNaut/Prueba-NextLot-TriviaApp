@@ -4,7 +4,7 @@ import UserModel from './User.model';
 import FactModel from './Fact.model';
 import '../../../app.types';
 
-async function createRelationships(UserId: number, Fact: Fact): Promise<number> {
+async function createRelationships(UserId: number, FactData: Fact): Promise<number> {
   return new Promise(async (resolve, reject) => {
     try {
       // Guards
@@ -29,19 +29,19 @@ async function createRelationships(UserId: number, Fact: Fact): Promise<number> 
 
       // Create a Fact if none found
 
-      let fact = await FactModel.findOne({ _id: Fact.fact.id });
+      let fact = await FactModel.findOne({ _id: FactData.fact.id });
 
       if (!fact) {
         console.log("Saving fact...");
 
         fact = new FactModel();
-        fact._id = Fact.fact.id;
+        fact._id = FactData.fact.id;
         await fact.save();
 
         fact.updateOne({
-          Text: Fact.fact.text,
-          Source: Fact.fact.source,
-          SourceUrl: Fact.fact.source_url,
+          Text: FactData.fact.text,
+          Source: FactData.fact.source,
+          SourceUrl: FactData.fact.source_url,
         });
       }
 
@@ -49,7 +49,7 @@ async function createRelationships(UserId: number, Fact: Fact): Promise<number> 
 
       // Create a UserFacts if none found
 
-      let userFact = await UserFactsModel.findOne({ User: user._id, Fact: Fact.fact.id });
+      let userFact = await UserFactsModel.findOne({ User: user._id, Fact: FactData.fact.id });
 
       if (!userFact) {
         console.log("Creating UserFact...");
@@ -99,4 +99,18 @@ export function storeFact(data: { userId: number, fact: Fact }, succeed: () => v
   } catch (error) {
     fail(error);
   }
+}
+
+export async function getUserFacts(userId: number): Promise<Fact[]> {
+  return new Promise((resolve, reject) => {
+    try {
+      UserFactsModel.find({}, (err, docs) => {
+        const facts = docs.map((doc) => doc)
+        resolve([]);
+      });
+    } catch (error) {
+      reject(error);
+      return null;
+    }
+  });
 }

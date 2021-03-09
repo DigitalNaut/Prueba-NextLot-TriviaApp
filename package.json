@@ -6,6 +6,7 @@
   "icon": "public/images/icon.svg",
   "scripts": {
     "start": "set NODE_ENV=development && ts-node-dev ./bin/www",
+    "start:fixed": "set FIXED=true && npm run start",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "prestart": "npm run build",

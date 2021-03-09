@@ -12,7 +12,6 @@ router.get('/',
   });
 
 router.get('/user/:userId/facts*', facts);
-router.get('/user/:userId/*', users);
-router.get('/facts*', facts);
+router.get('/user/:userId*', users);
 
 export default router;

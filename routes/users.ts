@@ -1,14 +1,16 @@
 import express from 'express';
 
-import UserModel from "../public/javascripts/db/User.model";
+import { getUserFacts } from "../public/javascripts/db/database";
 
 const router = express.Router();
 
 /* GET new User ID. */
-router.get('/user/:userId',
+router.get('/user/:userId/facts',
   (req, res) => {
+    // UserModel.
+
     res.send(
-      req.params
+      req.params.userId
     );
   });
 

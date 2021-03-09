@@ -2,10 +2,13 @@ import fetch from 'node-fetch';
 import { storeFact } from './db/database';
 
 import '../../app.types';
+import { rejects } from 'assert';
 
-export async function getNewFact(sessionId: number): Promise<Fact> {
+const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'random'}.json`;
+
+export async function getNewFact(userId: number): Promise<Fact> {
   try {
-    const apiCall = await fetch("https://uselessfacts.jsph.pl/random.json", {
+    const apiCall = await fetch(uri, {
       method: "GET",
     });
 
@@ -16,7 +19,7 @@ export async function getNewFact(sessionId: number): Promise<Fact> {
 
     if (fact)
       storeFact({
-        userId: sessionId, fact
+        userId, fact
       }, () => {
         console.log("Finished talking to Mongoose");
       }, (error: Error) => {
