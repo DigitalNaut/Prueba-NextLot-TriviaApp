@@ -1,10 +1,5 @@
 <template>
   <div class="hello">
-    <div
-      class="bg-purple text-white sm:bg-green md:bg-blue md:text-yellow lg:bg-red xl:bg-orange ..."
-    >
-      Test
-    </div>
     <h1>{{ msg }}</h1>
     <p>
       For a guide and recipes on how to configure / customize this project,<br />
@@ -116,7 +111,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
+import { Options, Vue } from "vue-class-component";
 
 @Options({
   props: {
@@ -124,7 +119,7 @@ import { Options, Vue } from 'vue-class-component'
   }
 })
 export default class HelloWorld extends Vue {
-  msg!: string
+  msg!: string;
 }
 </script>
 

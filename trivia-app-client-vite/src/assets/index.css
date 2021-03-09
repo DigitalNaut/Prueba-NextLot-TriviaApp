@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: Krub;
+    font-weight: 200, 400;
+    src: url(https://fonts.gstatic.com/s/krub/v4/sZlGdRyC6CRYbkQiwLBCSoASSf8.woff2) format('woff2');
+  }
+  @font-face {
+    font-family: Rock Salt;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/rocksalt/v11/MwQ0bhv11fWD6QsAVOZrt0M6.woff2) format('woff2');
+  }
+}
+
+@layer components {
+  .app {
+    @apply flex flex-row items-center justify-center min-h-screen p-2 text-indigo bg-haiti;
+
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+  }
+  .card {
+    @apply flex items-center justify-center align-middle bg-white shadow-lg rounded-2xl h-52 w-96;
+  }
+}

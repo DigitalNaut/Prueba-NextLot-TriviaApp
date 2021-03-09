@@ -1,4 +1,4 @@
-# frontend
+# trivia-app-client
 
 ## Project setup
 ```
