@@ -4,13 +4,18 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import { Request, Response, NextFunction } from 'express';
+import dotenv from 'dotenv';
 
 import indexRouter from './routes/index';
 
 import favicon from 'serve-favicon';
 
-const app = express();
+if (process.env.NODE_ENV === "development")
+  dotenv.config({ path: '.env.development' });
+else
+  dotenv.config({ path: '.env.production' });
 
+const app = express();
 app.use(favicon(path.join(__dirname, "../public/images/favicon.ico")));
 
 // view engine setup

@@ -6,8 +6,9 @@ const router = express.Router();
 
 /* GET new Session ID. */
 router.get('/facts\/new',
-  (_, res) => {
-    res.send("Hi");
+  async (_, res) => {
+    const newFact = await getNewFact();
+    res.send(newFact);
   });
 
 router.get('/facts', (_, res) => { res.redirect('/facts\/new'); });

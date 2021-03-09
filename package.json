@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "icon": "public/images/icon.svg",
   "scripts": {
-    "start": "ts-node-dev ./bin/www",
+    "start": "set NODE_ENV=development && ts-node-dev ./bin/www",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "prestart": "npm run build",
@@ -13,13 +13,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@types/mongoose": "^5.10.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "mongoose": "^5.11.19",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
@@ -27,7 +29,9 @@
     "@types/http-errors": "^1.8.0",
     "@types/morgan": "^1.9.2",
     "@types/node": "^14.14.32",
+    "@types/node-fetch": "^2.5.8",
     "@types/serve-favicon": "^2.5.2",
+    "dotenv": "^8.2.0",
     "serve-favicon": "^2.5.0",
     "ts-node-dev": "^1.1.6",
     "tslint": "^6.1.3",
