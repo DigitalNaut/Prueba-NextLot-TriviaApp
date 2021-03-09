@@ -1,1 +1,1 @@
-GET http://localhost:3000/session/new
+GET http://localhost:3000/user/0/facts/new

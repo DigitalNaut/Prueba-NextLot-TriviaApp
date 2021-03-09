@@ -1,35 +1,9 @@
 import fetch from 'node-fetch';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import { storeFact } from './db/database';
 
-interface Fact {
-  status: string
-  fact?: object
-  error?: unknown
-}
+import '../../app.types';
 
-function saveFactToDB(fact: Fact, succeed: () => void, fail: (error?: Error) => void) {
-  try {
-    mongoose.connect(process.env.DB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    const db = mongoose.connection;
-
-    db.on('error', error => fail(error));
-    db.once('open', () => {
-      const collection = db.collection("Facts");
-
-
-
-      succeed();
-    })
-  } catch (error) {
-    fail(error);
-  }
-}
-
-export async function getNewFact(): Promise<Fact> {
+export async function getNewFact(sessionId: number): Promise<Fact> {
   try {
     const apiCall = await fetch("https://uselessfacts.jsph.pl/random.json", {
       method: "GET",
@@ -41,10 +15,12 @@ export async function getNewFact(): Promise<Fact> {
     }
 
     if (fact)
-      saveFactToDB(fact, () => {
-        console.log("Connected to Mongoose");
-      }, (error) => {
-        console.log("Could not connect to Mongoose:", error);
+      storeFact({
+        userId: sessionId, fact
+      }, () => {
+        console.log("Finished talking to Mongoose");
+      }, (error: Error) => {
+        console.log("Error connecting to Mongoose:", error);
       });
 
     return fact;

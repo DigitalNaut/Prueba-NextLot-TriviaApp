@@ -4,13 +4,12 @@ import { getNewFact } from "../public/javascripts/controller";
 
 const router = express.Router();
 
-/* GET new Session ID. */
-router.get('/facts\/new',
-  async (_, res) => {
-    const newFact = await getNewFact();
+/* GET new Fact. */
+router.get('/user/:userId/facts/new',
+  async (req, res) => {
+    const userId = parseInt(req.params.userId, 16);
+    const newFact = await getNewFact(userId);
     res.send(newFact);
   });
-
-router.get('/facts', (_, res) => { res.redirect('/facts\/new'); });
 
 export default router;

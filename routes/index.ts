@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import sessions from "./user";
+import users from "./users";
 import facts from "./facts";
 
 const router = Router();
@@ -11,7 +11,8 @@ router.get('/',
     res.render('index', { title: 'Express' });
   });
 
-router.get('/session*', sessions);
+router.get('/user/:userId/facts*', facts);
+router.get('/user/:userId/*', users);
 router.get('/facts*', facts);
 
 export default router;
