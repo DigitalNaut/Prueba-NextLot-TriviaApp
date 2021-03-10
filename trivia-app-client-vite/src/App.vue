@@ -34,7 +34,7 @@ export default defineComponent({
     return {
       factsList: new Array<Fact>(),
       fact1: "",
-      fact2: "It's a fact!",
+      fact2: "It's a fact! Click on the card to start learning!",
       isFlipped: false,
     };
   },
