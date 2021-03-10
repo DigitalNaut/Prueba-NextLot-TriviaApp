@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <div class="flex flex-row h-52">
+    <div class="flex p-0 m-0 place-items-center h-half">
       <FlipCard
         msg="Did you know?"
         :flippedState="isFlipped"
@@ -10,6 +10,7 @@
       <FactCard :msg="fact2" class="rounded-r-xl"></FactCard>
     </div>
     <FactsBoard
+      class="h-half"
       msg="Click on the blue card to get the facts!"
       :list="this.factsList"
     ></FactsBoard>

@@ -1,12 +1,21 @@
 <template>
-  <div class="absolute z-10 origin-right card flip-card">
+  <div class="absolute z-10 card flip-card">
     <div
       class="relative flex flex-col w-full h-full flip-card-inner"
       :class="{ flipped: flippedState }"
-      
     >
-      <div class="text-white cardFace flip-card-front rounded-l-xl bg-indigo" :class="{ pointer: !flippedState }">{{ msg }}</div>
-      <div class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti" :class="{ pointer: flippedState }">{{ msg }}</div>
+      <div
+        class="text-white cardFace flip-card-front rounded-l-xl bg-indigo"
+        :class="{ pointer: !flippedState }"
+      >
+        {{ msg }}
+      </div>
+      <div
+        class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti"
+        :class="{ pointer: flippedState }"
+      >
+        {{ msg }}
+      </div>
     </div>
   </div>
 </template>
@@ -23,8 +32,8 @@ export default defineComponent({
     },
     flippedState: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
 });
 </script>
@@ -42,7 +51,7 @@ export default defineComponent({
 
 /* This container is needed to position the front and back side */
 .flip-card-inner {
-  transition: transform 0.3s;
+  transition: transform 0.5s;
   transform-style: preserve-3d;
 }
 
@@ -59,10 +68,6 @@ export default defineComponent({
   height: 100%;
   -webkit-backface-visibility: hidden; /* Safari */
   backface-visibility: hidden;
-}
-
-/* Style the front side */
-.flip-card-front {
 }
 
 /* Style the back side */

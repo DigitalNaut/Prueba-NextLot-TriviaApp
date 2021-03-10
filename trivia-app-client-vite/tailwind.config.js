@@ -1,3 +1,4 @@
+const { maxHeight } = require("tailwindcss/defaultTheme");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
@@ -11,6 +12,11 @@ module.exports = {
   },
   plugins: [],
   theme: {
+    extend: {
+      height: {
+        'half': '50vh',
+      }
+    },
     fontFamily: {
       lora: ["Lora", ...defaultTheme.fontFamily.sans],
       rockSalt: ["Rock Salt"],
