@@ -1,12 +1,12 @@
 <template>
-  <div class="absolute z-10 origin-right cursor-pointer card flip-card">
+  <div class="absolute z-10 origin-right card flip-card">
     <div
       class="relative flex flex-col w-full h-full flip-card-inner"
       :class="{ flipped: flippedState }"
       
     >
-      <div class="text-white cardFace flip-card-front rounded-l-xl bg-indigo">{{ msg }}</div>
-      <div class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti">{{ msg }}</div>
+      <div class="text-white cardFace flip-card-front rounded-l-xl bg-indigo" :class="{ pointer: !flippedState }">{{ msg }}</div>
+      <div class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti" :class="{ pointer: flippedState }">{{ msg }}</div>
     </div>
   </div>
 </template>
@@ -30,6 +30,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.pointer {
+  cursor: pointer;
+}
+
 /* The flip card container. */
 .flip-card {
   background-color: transparent;
