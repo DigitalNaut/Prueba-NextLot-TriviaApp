@@ -1,7 +1,7 @@
-interface Fact {
+export interface IFact {
   status: string
   fact?: {
-    id: string
+    _id: string
     text: string
     source: string
     source_url: string

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import cors from 'cors';
 
 import users from "./users";
 import facts from "./facts";
@@ -11,7 +12,7 @@ router.get('/',
     res.render('index', { title: 'Express' });
   });
 
-router.get('/user/:userId/facts*', facts);
+router.get('/user/:userId/facts*', cors(), facts);
 router.get('/user/:userId*', users);
 
 export default router;

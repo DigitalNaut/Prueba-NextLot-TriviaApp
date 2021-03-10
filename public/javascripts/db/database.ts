@@ -2,9 +2,9 @@ import { connect, connection, Types } from 'mongoose';
 import UserFactsModel from './UserFacts.model';
 import UserModel from './User.model';
 import FactModel from './Fact.model';
-import '../../../app.types';
+import { IFact } from '../../../app.types';
 
-async function createRelationships(UserId: number, FactData: Fact): Promise<number> {
+async function createRelationships(UserId: number, FactData: IFact): Promise<number> {
   return new Promise(async (resolve, reject) => {
     try {
       // Guards
@@ -29,13 +29,13 @@ async function createRelationships(UserId: number, FactData: Fact): Promise<numb
 
       // Create a Fact if none found
 
-      let fact = await FactModel.findOne({ _id: FactData.fact.id });
+      let fact = await FactModel.findOne({ _id: FactData.fact._id });
 
       if (!fact) {
         console.log("Saving fact...");
 
         fact = new FactModel();
-        fact._id = FactData.fact.id;
+        fact._id = FactData.fact._id;
         await fact.save();
 
         fact.updateOne({
@@ -49,7 +49,7 @@ async function createRelationships(UserId: number, FactData: Fact): Promise<numb
 
       // Create a UserFacts if none found
 
-      let userFact = await UserFactsModel.findOne({ User: user._id, Fact: FactData.fact.id });
+      let userFact = await UserFactsModel.findOne({ User: user._id, Fact: FactData.fact._id });
 
       if (!userFact) {
         console.log("Creating UserFact...");
@@ -77,7 +77,7 @@ async function createRelationships(UserId: number, FactData: Fact): Promise<numb
   });
 }
 
-export function storeFact(data: { userId: number, fact: Fact }, succeed: () => void, fail: (error?: Error) => void) {
+export function storeFact(data: { userId: number, fact: IFact }, succeed: () => void, fail: (error?: Error) => void) {
   try {
     // Connect to the DB
     connect(process.env.DB_URI, {
@@ -101,7 +101,7 @@ export function storeFact(data: { userId: number, fact: Fact }, succeed: () => v
   }
 }
 
-export async function getUserFacts(userId: number): Promise<Fact[]> {
+export async function getUserFacts(userId: number): Promise<IFact[]> {
   return new Promise((resolve, reject) => {
     try {
       UserFactsModel.find({}, (err, docs) => {

@@ -1,21 +1,21 @@
-import fetch from 'node-fetch';
+import { default as axios, AxiosResponse } from 'axios'; // Provides autocomplete and parameter typings
 import { storeFact } from './db/database';
 
-import '../../app.types';
-import { rejects } from 'assert';
+import { IFact } from '../../app.types';
 
 const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'random'}.json`;
 
-export async function getNewFact(userId: number): Promise<Fact> {
+export async function getNewFact(userId: number): Promise<IFact> {
   try {
-    const apiCall = await fetch(uri, {
-      method: "GET",
-    });
+    const data: IFact = await axios.get(uri).then((value: AxiosResponse<IFact>) => value.data);
 
-    const fact: Fact = {
+    console.log("Data:", data);
+
+    const fact: IFact = {
       status: "OK",
-      fact: await apiCall.json()
-    }
+      error: null,
+      fact: data.fact
+    };
 
     if (fact)
       storeFact({

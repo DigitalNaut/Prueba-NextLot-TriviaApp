@@ -12,7 +12,7 @@ const FactSchema = new Schema({
 
 FactSchema.plugin(uniqueValidator, { message: "Fact already exists." });
 
-export interface IFact extends Document {
+export interface Fact extends Document {
   _id: string,
   User: number,
   Text: string,
@@ -20,4 +20,4 @@ export interface IFact extends Document {
   SourceUrl: string,
 }
 
-export default model<IFact>('Fact', FactSchema);
+export default model<Fact>('Fact', FactSchema);
