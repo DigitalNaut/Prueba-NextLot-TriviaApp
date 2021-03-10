@@ -13,6 +13,6 @@ router.get('/',
   });
 
 router.get('/user/:userId/facts*', cors(), facts);
-router.get('/user/:userId*', users);
+router.get('/user/:userId*', cors(), users);
 
 export default router;

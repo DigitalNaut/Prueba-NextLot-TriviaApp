@@ -9,7 +9,10 @@
       <FactCard :msg="fact1" class="rounded-l-xl"></FactCard>
       <FactCard :msg="fact2" class="rounded-r-xl"></FactCard>
     </div>
-    <FactsBoard :list="this.factsList"></FactsBoard>
+    <FactsBoard
+      msg="Click on the blue card to start learning new facts!"
+      :list="this.factsList"
+    ></FactsBoard>
   </div>
 </template>
 
@@ -26,6 +29,7 @@ export interface Fact {
   source: string;
   source_url: string;
   permalink: string;
+  error?: string;
 }
 
 export default defineComponent({
@@ -34,7 +38,7 @@ export default defineComponent({
     return {
       factsList: new Array<Fact>(),
       fact1: "",
-      fact2: "It's a fact!",
+      fact2: "It's a fact!", // Start message
       isFlipped: false,
     };
   },
@@ -44,6 +48,7 @@ export default defineComponent({
     FactCard,
   },
   methods: {
+    // Log errors
     handleError(error: string) {
       console.error(error);
     },
@@ -74,29 +79,36 @@ export default defineComponent({
       this.displayFact(fact.text);
     },
     fetchFact(): Promise<Fact> {
-      return new Promise(async (resolve, reject) => {
+      return new Promise<Fact>(async (resolve, reject) => {
         try {
+          // Log activity
           console.log("Fetching fact from server...");
 
           // Call local Trivia API
-          const apiCall = await fetch("http://localhost:3000/user/1/facts/new");
+          const apiCall:Response = await fetch("http://localhost:3000/user/1/facts/new");
+          console.log(`Repsonse type: ${typeof apiCall.json}`);
+
+          console.log("Response text: ")
+
           const json = await apiCall.json();
 
           // Log results
-          console.log("Api call:", apiCall);
+          console.log("JSON parsed:", json);
+
           // If server error, throw error
           if (json.error) {
-            console.log("Server error:", json.error);
+            console.log(`Server error: ${json.error}`);
             this.handleError("External server error");
             reject(null);
-          } else console.log("Response:", json.fact);
+          } else {
+            // Log & resolve fact
+            console.log(`Response: ${json.fact}`);
+            resolve(json.fact);
+          }
 
-          // Resolve
-          resolve(json.fact);
-
-          // Handle errors
+          // Handle errors & reject
         } catch (error) {
-          console.log("Error ocurred fetching data:", error);
+          this.handleError(`Error ocurred fetching data: ${error}`);
           reject(null);
         }
       });

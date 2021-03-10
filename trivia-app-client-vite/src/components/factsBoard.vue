@@ -22,7 +22,7 @@
         class="flex items-center justify-center w-full h-full text-xl"
         v-else
       >
-        <p>Click on the blue card to start learning new facts!</p>
+        <p>{{msg}}</p>
       </div>
     </div>
   </div>
@@ -35,6 +35,10 @@ import { Fact } from "../App.vue";
 export default defineComponent({
   name: "facts-board",
   props: {
+    msg: {
+      required: true,
+      type: String,
+    },
     list: {
       required: true,
       type: Object as () => Array<Fact>,

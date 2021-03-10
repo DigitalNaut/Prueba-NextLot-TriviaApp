@@ -16,7 +16,7 @@ dotenv.config({ path: ".env" });
 const app = express();
 app.use(favicon(path.join(__dirname, "../public/images/favicon.ico")));
 
-// view engine setup
+// View engine setup
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "jade");
 
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.static(path.join(__dirname, "../trivia-app-client-vite/dist/")));
 
 // Entry poitns
-app.use("/*", indexRouter);
+app.use("/", cors(), indexRouter);
 
 app.get("/app*", (req:Request, res:Response, next:NextFunction) => {
   res.sendFile(path.join(__dirname, "../trivia-app-client-vite/dist/index.html"));

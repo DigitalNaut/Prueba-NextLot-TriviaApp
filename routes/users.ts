@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 
 import { getUserFacts } from "../public/javascripts/db/database";
@@ -5,7 +6,7 @@ import { getUserFacts } from "../public/javascripts/db/database";
 const router = express.Router();
 
 /* GET new User ID. */
-router.get('/user/:userId/facts',
+router.get('/user/:userId/facts', cors(),
   (req, res) => {
     // UserModel.
 
