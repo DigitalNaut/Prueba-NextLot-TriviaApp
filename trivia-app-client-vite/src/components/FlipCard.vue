@@ -46,7 +46,7 @@ export default defineComponent({
 /* The flip card container. */
 .flip-card {
   background-color: transparent;
-  perspective: 2000px; /* Remove this if you don't want the 3D effect */
+  perspective: 1000px; /* 3D effect */
 }
 
 /* This container is needed to position the front and back side */

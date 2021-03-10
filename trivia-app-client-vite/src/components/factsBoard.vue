@@ -2,8 +2,12 @@
   <div class="w-1/2 p-0 m-0 overflow-y-auto bg-white rounded-md">
     <div class="flex flex-col p-4 m-4 text-base text-haiti font-lora">
       <div v-if="list.length">
-        <span class="flex flex-row justify-end text-lg font-semibold text-center"
-          >Number of facts: {{ list.length }}</span
+        <span
+          class="flex flex-row justify-end text-lg font-semibold text-center"
+          >Number of facts:
+          <span class="ml-3 rounded-full text-haiti w-7 h-7 bg-bombai">{{
+            list.length
+          }}</span></span
         >
         <ol>
           <li v-for="fact in list" :key="fact.id">
@@ -22,7 +26,7 @@
         class="flex items-center justify-center w-full h-full text-xl"
         v-else
       >
-        <p>{{msg}}</p>
+        <p>{{ msg }}</p>
       </div>
     </div>
   </div>

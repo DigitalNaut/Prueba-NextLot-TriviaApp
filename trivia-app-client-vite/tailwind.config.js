@@ -14,7 +14,7 @@ module.exports = {
   theme: {
     extend: {
       height: {
-        'half': '50vh',
+        'half': '49vh',
       }
     },
     fontFamily: {
