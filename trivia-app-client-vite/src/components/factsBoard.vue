@@ -1,17 +1,29 @@
 <template>
   <div class="w-1/2 h-64 p-4 m-4 overflow-y-auto bg-white rounded-md">
     <div class="flex flex-col p-4 text-base text-haiti font-lora">
-      <span class="text-lg font-semibold text-center">Number of facts: {{ list.length }}</span>
-      <ol v-if="list.length">
-        <li v-for="fact in list" :key="fact.id">
-          <ul>
-            <li>{{ fact.text }}</li>
-            <span class="indented">Language: </span><li class="inline-block">{{ fact.language.toUpperCase() }}</li>
-            <li class="italic indented"><a href="{{fact.permalink}}">Permalink</a></li>
-          </ul>
-        </li>
-      </ol>
-      <div class="text-center" v-else>Click on the blue card to start learning new facts!</div>
+      <div v-if="list.length">
+        <span class="text-lg font-semibold text-center"
+          >Number of facts: {{ list.length }}</span
+        >
+        <ol>
+          <li v-for="fact in list" :key="fact.id">
+            <ul>
+              <li>{{ fact.text }}</li>
+              <span class="indented">Language: </span>
+              <li class="inline-block">{{ fact.language.toUpperCase() }}</li>
+              <li class="italic indented">
+                <a href="{{fact.permalink}}">Permalink</a>
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+      <div
+        class="flex items-center justify-center w-full h-full text-xl"
+        v-else
+      >
+        <p>Click on the blue card to start learning new facts!</p>
+      </div>
     </div>
   </div>
 </template>
@@ -32,7 +44,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .indented {
-    padding-left: 1rem;
-  }
+.indented {
+  padding-left: 1rem;
+}
 </style>

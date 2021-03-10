@@ -1,7 +1,7 @@
 <template>
   <div class="absolute z-10 origin-right cursor-pointer card flip-card">
     <div
-      class="relative flex flex-col w-full h-full align-middle flip-card-inner"
+      class="relative flex flex-col w-full h-full flip-card-inner"
       :class="{ flipped: flippedState }"
       
     >
