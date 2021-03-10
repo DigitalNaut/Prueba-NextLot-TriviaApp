@@ -5,8 +5,8 @@
       :class="{ flipped: flippedState }"
       
     >
-      <div class="cardFace flip-card-front rounded-l-xl">{{ msg }}</div>
-      <div class="cardFace flip-card-back rounded-r-xl">{{ msg }}</div>
+      <div class="text-white cardFace flip-card-front rounded-l-xl bg-indigo">{{ msg }}</div>
+      <div class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti">{{ msg }}</div>
     </div>
   </div>
 </template>
@@ -59,14 +59,10 @@ export default defineComponent({
 
 /* Style the front side */
 .flip-card-front {
-  background-color: #454ebb;
-  color: #b2b5c0;
 }
 
 /* Style the back side */
 .flip-card-back {
-  background-color: #b2b5c0;
-  color: #454ebb;
   transform: rotateY(180deg);
 }
 </style>
