@@ -11,9 +11,7 @@ import indexRouter from "./routes/index";
 
 import favicon from "serve-favicon";
 
-if (process.env.NODE_ENV === "development")
-  dotenv.config({ path: ".env.development" });
-else dotenv.config({ path: ".env.production" });
+dotenv.config({ path: ".env" });
 
 const app = express();
 app.use(favicon(path.join(__dirname, "../public/images/favicon.ico")));
