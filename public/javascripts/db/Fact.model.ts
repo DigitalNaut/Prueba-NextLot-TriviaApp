@@ -17,7 +17,7 @@ export interface Fact extends Document {
   User: number,
   Text: string,
   Source: string,
-  SourceUrl: string,
+  Source_url: string,
 }
 
 export default model<Fact>('Fact', FactSchema);

@@ -1,12 +1,7 @@
+import { Fact } from "./public/javascripts/db/Fact.model";
+
 export interface IFact {
   status: string
-  fact?: {
-    _id: string
-    text: string
-    source: string
-    source_url: string
-    language: string
-    permalink: string
-  }
+  fact: Fact
   error?: unknown
 }

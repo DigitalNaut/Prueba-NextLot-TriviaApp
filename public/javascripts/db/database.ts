@@ -29,19 +29,19 @@ async function createRelationships(UserId: number, FactData: IFact): Promise<num
 
       // Create a Fact if none found
 
-      let fact = await FactModel.findOne({ _id: FactData.fact._id });
+      let fact = await FactModel.findOne({ _id: FactData.fact.id });
 
       if (!fact) {
         console.log("Saving fact...");
 
         fact = new FactModel();
-        fact._id = FactData.fact._id;
+        fact._id = FactData.fact.id;
         await fact.save();
 
         fact.updateOne({
-          Text: FactData.fact.text,
-          Source: FactData.fact.source,
-          SourceUrl: FactData.fact.source_url,
+          Text: FactData.fact.Text,
+          Source: FactData.fact.Source,
+          SourceUrl: FactData.fact.Source_url,
         });
       }
 

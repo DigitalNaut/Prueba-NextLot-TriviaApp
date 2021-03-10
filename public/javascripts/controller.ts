@@ -2,19 +2,20 @@ import { default as axios, AxiosResponse } from 'axios'; // Provides autocomplet
 import { storeFact } from './db/database';
 
 import { IFact } from '../../app.types';
+import { Fact } from '../javascripts/db/Fact.model';
 
 const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'random'}.json`;
 
 export async function getNewFact(userId: number): Promise<IFact> {
   try {
-    const data: IFact = await axios.get(uri).then((value: AxiosResponse<IFact>) => value.data);
+    const data: Fact = await axios.get(uri).then((value: AxiosResponse<Fact>) => value.data);
 
     console.log("Data:", data);
 
     const fact: IFact = {
       status: "OK",
       error: null,
-      fact: data.fact
+      fact: data
     };
 
     if (fact)
@@ -28,6 +29,6 @@ export async function getNewFact(userId: number): Promise<IFact> {
 
     return fact;
   } catch (error) {
-    return { status: "Error", error }
+    return { status: "Error", error, fact: null }
   }
 }

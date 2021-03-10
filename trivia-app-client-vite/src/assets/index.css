@@ -17,11 +17,14 @@
 
 @layer components {
   .app {
-    @apply flex flex-row items-center justify-center min-h-screen p-2 text-indigo bg-haiti;
+    @apply flex flex-col items-center justify-center min-h-screen p-2 text-indigo bg-haiti;
 
     font-family: Avenir, Helvetica, Arial, sans-serif;
   }
   .card {
-    @apply flex items-center justify-center align-middle bg-white shadow-lg rounded-2xl h-52 w-96;
+    @apply flex bg-white shadow-lg rounded-2xl h-52 w-96;
+  }
+  .cardFace {
+    @apply text-3xl italic text-center text-indigo font-rockSalt;
   }
 }
