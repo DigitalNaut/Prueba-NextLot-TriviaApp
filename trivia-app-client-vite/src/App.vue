@@ -6,8 +6,8 @@
         :flippedState="isFlipped"
         @click="this.flipCard()"
       ></FlipCard>
-      <FactCard :msg="fact1"></FactCard>
-      <FactCard :msg="fact2"></FactCard>
+      <FactCard :msg="fact1" class="rounded-l-xl"></FactCard>
+      <FactCard :msg="fact2" class="rounded-r-xl"></FactCard>
     </div>
     <FactsBoard :list="this.factsList"></FactsBoard>
   </div>
@@ -34,7 +34,7 @@ export default defineComponent({
     return {
       factsList: new Array<Fact>(),
       fact1: "",
-      fact2: "It's a fact! Click on the card to start learning!",
+      fact2: "It's a fact!",
       isFlipped: false,
     };
   },
@@ -60,13 +60,14 @@ export default defineComponent({
       }
     },
     async flipCard() {
+      // Get a new fact
       let fact: Fact = await this.fetchFact();
 
       // Safeguard
       if (!fact) return this.handleError("No fact received.");
 
       // Update table list
-      this.factsList.push(fact);
+      this.factsList.unshift(fact);
       console.log(this.factsList.length);
 
       // Display the fact
@@ -75,6 +76,8 @@ export default defineComponent({
     fetchFact(): Promise<Fact> {
       return new Promise(async (resolve, reject) => {
         try {
+          console.log("Fetching fact from server...");
+
           // Call local Trivia API
           const apiCall = await fetch("http://localhost:3000/user/1/facts/new");
           const json = await apiCall.json();

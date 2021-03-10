@@ -16,8 +16,6 @@ dotenv.config({ path: ".env" });
 const app = express();
 app.use(favicon(path.join(__dirname, "../public/images/favicon.ico")));
 
-// app.use(cors());
-
 // view engine setup
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "jade");

@@ -5,8 +5,8 @@
       :class="{ flipped: flippedState }"
       
     >
-      <div class="cardFace flip-card-front rounded-2xl">{{ msg }}</div>
-      <div class="cardFace flip-card-back rounded-2xl">{{ msg }}</div>
+      <div class="cardFace flip-card-front rounded-l-xl">{{ msg }}</div>
+      <div class="cardFace flip-card-back rounded-r-xl">{{ msg }}</div>
     </div>
   </div>
 </template>
