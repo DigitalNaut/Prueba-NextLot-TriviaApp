@@ -10,7 +10,7 @@
       <FactCard :msg="fact2" class="rounded-r-xl"></FactCard>
     </div>
     <FactsBoard
-      msg="Click on the blue card to start learning new facts!"
+      msg="Click on the blue card to get the facts!"
       :list="this.factsList"
     ></FactsBoard>
   </div>
