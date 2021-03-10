@@ -1,7 +1,7 @@
 <template>
-  <div class="z-0 items-center justify-center transform cursor-pointer card">
-    <span class="p-8 text-2xl italic text-center text-haiti font-lora">
-      {{ msg }}
+  <div class="z-0 items-center justify-center overflow-y-auto transform card">
+    <span class="p-8 text-xl italic text-center text-haiti font-lora">
+      {{ msg ? msg : "Loading..." }}
     </span>
   </div>
 </template>

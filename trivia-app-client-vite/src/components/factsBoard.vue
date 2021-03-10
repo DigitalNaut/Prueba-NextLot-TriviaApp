@@ -1,7 +1,7 @@
 <template>
-  <div class="w-1/4 p-4 m-4 overflow-y-auto bg-white h-52">
+  <div class="w-1/2 h-64 p-4 m-4 overflow-y-auto bg-white rounded-md">
     <div class="flex flex-col p-4 text-base text-haiti font-lora">
-      <span class="text-lg font-semibold text-center">Number of facts: {{ list.length }}</span>
+      <span class="text-base font-semibold text-center">Number of facts: {{ list.length }}</span>
       <nl>
         <li v-for="fact in list.reverse()" :key="fact.id">
           <ul>

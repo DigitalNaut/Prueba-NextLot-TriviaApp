@@ -1,7 +1,11 @@
 <template>
   <div class="app">
     <div class="flex flex-row h-52">
-      <FlipCard msg="Did you know?" @click="this.flipCard()"></FlipCard>
+      <FlipCard
+        msg="Did you know?"
+        :flippedState="isFlipped"
+        @click="this.flipCard()"
+      ></FlipCard>
       <FactCard :msg="fact1"></FactCard>
       <FactCard :msg="fact2"></FactCard>
     </div>
@@ -30,7 +34,8 @@ export default defineComponent({
     return {
       factsList: new Array<Fact>(),
       fact1: "",
-      fact2: "",
+      fact2: "It's a fact!",
+      isFlipped: false,
     };
   },
   components: {
@@ -42,17 +47,16 @@ export default defineComponent({
     handleError(error: string) {
       console.error(error);
     },
-    updateFact() {
-      //
-    },
     displayFact(text: string) {
       // Flip between card displays
       if (this.fact1 === "") {
         this.fact1 = text;
         this.fact2 = "";
+        this.isFlipped = true;
       } else {
         this.fact2 = text;
         this.fact1 = "";
+        this.isFlipped = false;
       }
     },
     async flipCard() {

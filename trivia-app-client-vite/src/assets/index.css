@@ -25,6 +25,6 @@
     @apply flex bg-white shadow-lg rounded-2xl h-52 w-96;
   }
   .cardFace {
-    @apply text-3xl italic text-center text-indigo font-rockSalt;
+    @apply flex flex-col justify-center text-3xl italic text-center text-indigo font-rockSalt;
   }
 }
