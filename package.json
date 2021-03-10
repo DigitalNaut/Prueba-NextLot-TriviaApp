@@ -5,6 +5,7 @@
   "main": "dist/app.js",
   "icon": "public/images/icon.svg",
   "scripts": {
+    "full": "set NODE_ENV=development && ts-node-dev ./bin/www && cd ./trivia-app-client-vite && vite start",
     "start": "set NODE_ENV=development && ts-node-dev ./bin/www",
     "start:fixed": "set FIXED=true && npm run start",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",

@@ -17,7 +17,7 @@
 
 @layer components {
   .app {
-    @apply flex flex-col items-center justify-center min-h-screen p-2 text-indigo bg-haiti;
+    @apply flex flex-col items-center justify-center min-h-screen p-2 text-indigo bg-gradient-to-b from-indigo to-haiti;
 
     font-family: Avenir, Helvetica, Arial, sans-serif;
   }
