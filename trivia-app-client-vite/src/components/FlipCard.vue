@@ -57,7 +57,7 @@ export default defineComponent({
   backface-visibility: hidden;
 }
 
-/* Style the front side (fallback if image is missing) */
+/* Style the front side */
 .flip-card-front {
   background-color: #454ebb;
   color: #b2b5c0;

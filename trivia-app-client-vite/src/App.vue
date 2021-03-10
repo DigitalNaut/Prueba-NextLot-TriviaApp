@@ -17,6 +17,7 @@
 </template>
 
 <script lang="ts">
+import axios from "axios";
 import { defineComponent } from "vue";
 import FlipCard from "./components/flipCard.vue";
 import FactsBoard from "./components/factsBoard.vue";
@@ -85,25 +86,24 @@ export default defineComponent({
           console.log("Fetching fact from server...");
 
           // Call local Trivia API
-          const apiCall:Response = await fetch("http://localhost:3000/user/1/facts/new");
-          console.log(`Repsonse type: ${typeof apiCall.json}`);
-
-          console.log("Response text: ")
-
-          const json = await apiCall.json();
+          const apiCall = await axios.get(
+            "http://localhost:3000/user/1/facts/new"
+          );
+          const data = await apiCall.data;
 
           // Log results
-          console.log("JSON parsed:", json);
+          console.log(`Repsonse type: ${typeof apiCall}`);
+          console.log("Data:", data);
 
           // If server error, throw error
-          if (json.error) {
-            console.log(`Server error: ${json.error}`);
+          if (!data) {
+            console.log(`Server response not a JSON.`);
             this.handleError("External server error");
             reject(null);
           } else {
             // Log & resolve fact
-            console.log(`Response: ${json.fact}`);
-            resolve(json.fact);
+            console.log(`Response: ${data.fact}`);
+            resolve(data.fact);
           }
 
           // Handle errors & reject

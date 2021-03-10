@@ -2,12 +2,12 @@
   <div class="w-1/2 h-64 p-4 m-4 overflow-y-auto bg-white rounded-md">
     <div class="flex flex-col p-4 text-base text-haiti font-lora">
       <div v-if="list.length">
-        <span class="text-lg font-semibold text-center"
+        <span class="flex flex-row justify-end text-lg font-semibold text-center"
           >Number of facts: {{ list.length }}</span
         >
         <ol>
           <li v-for="fact in list" :key="fact.id">
-            <ul>
+            <ul class="p-8 m-4 text-white rounded-md bg-haiti">
               <li>{{ fact.text }}</li>
               <span class="indented">Language: </span>
               <li class="inline-block">{{ fact.language.toUpperCase() }}</li>
