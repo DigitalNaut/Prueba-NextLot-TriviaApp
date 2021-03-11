@@ -24,6 +24,8 @@ Set API_URI to Mongo DB url
 
 > npm start
   
-You can now access the app from the URLs:
-http://localhost:3000/ for the server
-http://localhost:8080/ for the client
+URLs:
+
+Server: http://localhost:3000/ 
+
+Client: http://localhost:8080/ 
