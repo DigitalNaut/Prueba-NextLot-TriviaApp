@@ -20,7 +20,6 @@
 <script lang="ts">
 import axios from "axios";
 import { defineComponent } from "vue";
-import vueRouter from "vue-router";
 
 import { storageAvailable, StorageTypes } from "./utilities/utility";
 

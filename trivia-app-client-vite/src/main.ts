@@ -8,5 +8,4 @@ import "./assets/index.css";
 
 const app = createApp(App);
 app.use(VueAxios, axios);
-app.use(VueRouter)
 app.mount("#app");
