@@ -2,12 +2,12 @@
   <div class="app">
     <div class="flex p-0 m-0 place-items-center h-half">
       <FlipCard
-        msg="Did you know?"
+        msg="Did you know...?"
         :flippedState="isFlipped"
         @click="this.flipCard()"
       ></FlipCard>
-      <FactCard :msg="fact1" class="rounded-l-xl"></FactCard>
-      <FactCard :msg="fact2" class="rounded-r-xl"></FactCard>
+      <FactCard :msg="fact1" :lang="factLang" class="rounded-l-xl"></FactCard>
+      <FactCard :msg="fact2" :lang="factLang" class="rounded-r-xl"></FactCard>
     </div>
     <FactsBoard
       class="h-half"
@@ -20,6 +20,10 @@
 <script lang="ts">
 import axios from "axios";
 import { defineComponent } from "vue";
+import vueRouter from "vue-router";
+
+import { storageAvailable, StorageTypes } from "./utilities/utility";
+
 import FlipCard from "./components/flipCard.vue";
 import FactsBoard from "./components/factsBoard.vue";
 import FactCard from "./components/factCard.vue";
@@ -40,8 +44,10 @@ export default defineComponent({
     return {
       factsList: new Array<Fact>(),
       fact1: "",
-      fact2: "It's a fact!", // Start message
+      fact2: "It's a fact!", // Start message,
+      factlang: "",
       isFlipped: false,
+      userId: "",
     };
   },
   components: {
@@ -51,10 +57,10 @@ export default defineComponent({
   },
   methods: {
     // Log errors
-    handleError(error: string) {
+    handleError(error: Error) {
       console.error(error);
     },
-    displayFact(text: string) {
+    displayFact(text: string, language: string) {
       // Flip between card displays
       if (this.fact1 === "") {
         this.fact1 = text;
@@ -65,20 +71,22 @@ export default defineComponent({
         this.fact1 = "";
         this.isFlipped = false;
       }
+
+      this.factlang = language;
     },
     async flipCard() {
       // Get a new fact
       let fact: Fact = await this.fetchFact();
 
       // Safeguard
-      if (!fact) return this.handleError("No fact received.");
+      if (!fact) return this.handleError(new Error("No fact received."));
 
       // Update table list
       this.factsList.unshift(fact);
-      console.log(this.factsList.length);
 
       // Display the fact
-      this.displayFact(fact.text);
+      console.log(fact.language);
+      this.displayFact(fact.text, fact.language.toUpperCase());
     },
     fetchFact(): Promise<Fact> {
       return new Promise<Fact>(async (resolve, reject) => {
@@ -99,7 +107,7 @@ export default defineComponent({
           // If server error, throw error
           if (!data) {
             console.log(`Server response not a JSON.`);
-            this.handleError("External server error");
+            this.handleError(new Error("External server error"));
             reject(null);
           } else {
             // Log & resolve fact
@@ -109,11 +117,34 @@ export default defineComponent({
 
           // Handle errors & reject
         } catch (error) {
-          this.handleError(`Error ocurred fetching data: ${error}`);
+          this.handleError(new Error(`Error ocurred fetching data: ${error}`));
           reject(null);
         }
       });
     },
+  },
+  async mounted() {
+    // Retrieve userId from memory
+    if (storageAvailable(StorageTypes.localStorage)) {
+      let storedUserId = window.localStorage.getItem("userId");
+      if (storedUserId) {
+        console.log(`Stored user ID: ${storedUserId}`);
+        this.userId = storedUserId;
+
+        // Otherwise, call API for new userId
+      } else {
+        const apiCall = await axios.get("http://localhost:3000/user/new");
+        this.userId = apiCall.data.userId;
+        console.log(`New user ID: ${this.userId}`);
+
+        // Store the new ID
+        window.localStorage.setItem("userId", this.userId);
+      }
+
+      // Errors
+    } else {
+      this.handleError(new Error("Local storage is not available."));
+    }
   },
 });
 </script>

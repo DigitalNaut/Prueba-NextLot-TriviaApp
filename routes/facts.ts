@@ -11,7 +11,7 @@ router.get('/user/:userId/facts/new', cors(),
     const userId = parseInt(req.params.userId, 12);
     const newFact = await getNewFact(userId);
 
-    console.log("Response:", newFact);
+    console.log("Response:", newFact.status);
     res.send(newFact);
   });
 

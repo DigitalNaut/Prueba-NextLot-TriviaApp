@@ -4,13 +4,21 @@ import { storeFact } from './db/database';
 import { IFact } from '../../app.types';
 import { Fact } from '../javascripts/db/Fact.model';
 
+enum Languages {
+  en="en",
+  de="de",
+}
+
 const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'random'}.json`;
 
-export async function getNewFact(userId: number): Promise<IFact> {
+export async function getNewFact(userId: number, language?: Languages): Promise<IFact> {
   try {
+    let customUri: string;
+    if (language) customUri = uri + "?language=" + language;
+
     const data: Fact = await axios.get(uri).then((value: AxiosResponse<Fact>) => value.data);
 
-    console.log("Data:", data);
+    console.log("Data type:", typeof data);
 
     const fact: IFact = {
       status: "OK",
@@ -23,8 +31,8 @@ export async function getNewFact(userId: number): Promise<IFact> {
         userId, fact
       }, () => {
         console.log("Finished talking to Mongoose");
-      }, (error: Error) => {
-        console.log("Error connecting to Mongoose:", error);
+      }, () => {
+        console.log("Error connecting to Mongoose.");
       });
 
     return fact;

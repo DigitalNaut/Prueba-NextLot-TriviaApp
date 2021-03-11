@@ -7,12 +7,12 @@ import facts from "./facts";
 const router = Router();
 
 /* GET home page. */
-router.get('/',
+router.get('/', cors(),
   (req, res, next) => {
     res.render('index', { title: 'Express' });
   });
 
+router.get('/user/*', cors(), users);
 router.get('/user/:userId/facts*', cors(), facts);
-router.get('/user/:userId*', cors(), users);
 
 export default router;

@@ -3,7 +3,7 @@
     <div class="flex flex-col p-4 m-4 text-base text-haiti font-lora">
       <div v-if="list.length">
         <span
-          class="flex flex-row justify-end text-lg font-semibold text-center"
+          class="flex flex-row justify-end pr-4 text-lg font-semibold text-center"
           >Number of facts:
           <span class="ml-3 rounded-full text-haiti w-7 h-7 bg-bombai">{{
             list.length

@@ -1,27 +1,28 @@
-import { connect, connection, Types } from 'mongoose';
+import { connect, connection, Types, Connection, ObjectId, Document } from 'mongoose';
 import UserFactsModel from './UserFacts.model';
 import UserModel from './User.model';
 import FactModel from './Fact.model';
 import { IFact } from '../../../app.types';
+
+function handleError(error: Error) {
+  console.error(`Internal database error:  ${error}`);
+}
 
 async function createRelationships(UserId: number, FactData: IFact): Promise<number> {
   return new Promise(async (resolve, reject) => {
     try {
       // Guards
       if (!Types.ObjectId.isValid(UserId) || UserId <= 0) {
-        console.log(`UserId request int URL is not valid: ${UserId}`); return;
+        console.log(`UserId request int URL is not valid: ${UserId}`); return 0;
       }
 
       // Create a User if none found
 
-      let user = await UserModel.findById(UserId);
+      let user: Document = await UserModel.findById(UserId);
 
       if (!user) {
         console.log("Creating User...");
-        const newUser = new UserModel();
-        newUser._id = UserId;
-        await newUser.save();
-
+        const newUser = await getNewUser();
         user = newUser;
       }
 
@@ -77,8 +78,10 @@ async function createRelationships(UserId: number, FactData: IFact): Promise<num
   });
 }
 
-export function storeFact(data: { userId: number, fact: IFact }, succeed: () => void, fail: (error?: Error) => void) {
+export function connectToDb(succeed: (db?: Connection) => void, fail?: (error?: Error) => void) {
   try {
+    console.log("Attempting connection to DB...");
+
     // Connect to the DB
     connect(process.env.DB_URI, {
       useNewUrlParser: true,
@@ -86,19 +89,78 @@ export function storeFact(data: { userId: number, fact: IFact }, succeed: () => 
     });
     const db = connection;
 
-    // Report errors
+    // Report external errors
     db.on('error', error => fail(error));
 
     // Success callback
     db.once('open', async () => {
-      await createRelationships(data.userId, data.fact);
+      console.log("Connected to DB");
+      await succeed(db);
+
       await db.close();
       console.log("Disconnected Mongoose")
-      succeed();
     });
+
+    // Handle internal errors
   } catch (error) {
-    fail(error);
+    handleError(error);
+    fail()
   }
+}
+
+export function storeFact(data: { userId: number, fact: IFact }, succeed: () => void, fail?: () => void) {
+  try {
+    connectToDb(
+      async () => {
+        console.log("DB: Building relations...");
+        await createRelationships(data.userId, data.fact); succeed();
+        succeed();
+      },
+      () => {
+        handleError(new Error("Could not store fact in DB."));
+        if (fail) fail();
+      });
+
+  } catch (error) {
+    handleError(error);
+    return;
+  }
+}
+
+export function getNewUser(): Promise<Document> {
+  return new Promise((resolve, reject) => {
+    // Connect to DB
+    connectToDb(async () => {
+
+      // Create new user
+      process.stdout.write('Creating a new user...');
+      const newUser = new UserModel();
+
+      // Create new ID
+      const newId = Types.ObjectId();
+      process.stdout.write(`with ID: ${newId}...\n`)
+      newUser._id = newId;
+
+      // Save it to DB
+      try {
+        process.stdout.write("Saving to DB....");
+        await newUser.save();
+        process.stdout.write("OK.\n");
+        resolve(newUser);
+      } catch (error) {
+        // Report error on failure
+        process.stdout.write("failed.\n");
+        handleError(error);
+        reject(null);
+      }
+      return newUser;
+
+    }, () => {
+      // Errors
+      handleError(new Error("Could not create new user on DB."));
+      reject(null);
+    });
+  });
 }
 
 export async function getUserFacts(userId: number): Promise<IFact[]> {
