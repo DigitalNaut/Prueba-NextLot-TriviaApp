@@ -2,16 +2,16 @@ import { Schema, model, Document } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 import '../../../app.types';
 
-const SessionFactsSchema = new Schema({
-  User: [{ type: Number, ref: 'User' }],
+export const UserFactsSchema = new Schema({
+  User: [{ type: String, ref: 'User' }],
   Fact: [{ type: String, ref: 'Fact' }],
 }, { timestamps: true });
 
-SessionFactsSchema.plugin(uniqueValidator, { message: "UserFacts already exists." });
+UserFactsSchema.plugin(uniqueValidator, { message: "UserFacts already exists." });
 
-export interface IUserFacts extends Document {
-  User: number,
+export interface UserFacts extends Document {
+  User: string,
   Fact: string,
 }
 
-export default model<IUserFacts>('UserFacts', SessionFactsSchema);
+export default model<UserFacts>('UserFacts', UserFactsSchema);

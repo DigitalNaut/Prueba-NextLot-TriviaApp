@@ -1,7 +1,7 @@
 import { Fact } from "./public/javascripts/db/Fact.model";
 
 export interface IFact {
-  status: string
+  userId: string
   fact: Fact
-  error?: unknown
+  errors?: unknown
 }

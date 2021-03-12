@@ -1,10 +1,10 @@
 import { Schema, model } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 
-const SessionSchema = new Schema({
+export const UserSchema = new Schema({
   _id: String
 }, { timestamps: true });
 
-SessionSchema.plugin(uniqueValidator, { message: "User already exists." });
+UserSchema.plugin(uniqueValidator, { message: "User already exists." });
 
-export default model('User', SessionSchema);
+export default model('User', UserSchema);

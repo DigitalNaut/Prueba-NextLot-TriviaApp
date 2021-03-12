@@ -1,8 +1,7 @@
 import cors from 'cors';
 import express from 'express';
-import UserModel from '../public/javascripts/db/User.model';
 
-import { getUserFacts, getNewUser } from "../public/javascripts/db/database";
+import { getNewUser } from "../public/javascripts/db/database";
 
 const router = express.Router();
 

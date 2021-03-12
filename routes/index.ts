@@ -8,7 +8,7 @@ const router = Router();
 
 /* GET home page. */
 router.get('/', cors(),
-  (req, res, next) => {
+  (_, res) => {
     res.render('index', { title: 'Express' });
   });
 

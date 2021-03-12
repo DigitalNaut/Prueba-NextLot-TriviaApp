@@ -87,21 +87,59 @@ export default defineComponent({
       console.log(fact.language);
       this.displayFact(fact.text, fact.language.toUpperCase());
     },
+    async fetchUserId() {
+      // Retrieve userId from memory
+      if (storageAvailable(StorageTypes.localStorage)) {
+        let storedUserId = window.localStorage.getItem("userId");
+        if (storedUserId) {
+          console.log(`Stored user ID: ${storedUserId}`);
+          this.userId = storedUserId;
+
+          // Otherwise, call API for new userId
+        } else {
+          const apiCall = await axios.get("http://localhost:3000/user/new");
+          this.userId = apiCall.data.userId;
+          console.log(`New user ID: ${this.userId}`);
+
+          // Store the new ID
+          window.localStorage.setItem("userId", this.userId);
+        }
+
+        // Errors
+      } else {
+        this.handleError(new Error("Local storage is not available."));
+      }
+    },
+    async fetchPreviousFacts(userId: string): Promise<[]> {
+      try {
+        const apiCall = await axios.get(
+          `http://localhost:3000/user/${userId}/facts/all`
+        );
+        let data = apiCall?.data?.facts;
+        console.log("Fetched previous User Facts:", data);
+
+        return data;
+      } catch (error) {
+        this.handleError(new Error("Could not fetch previous User Facts."));
+        return [];
+      }
+    },
     fetchFact(): Promise<Fact> {
       return new Promise<Fact>(async (resolve, reject) => {
         try {
           // Log activity
           console.log("Fetching fact from server...");
 
+          //if(!this.user)
+
           // Call local Trivia API
           const apiCall = await axios.get(
-            "http://localhost:3000/user/1/facts/new"
+            `http://localhost:3000/user/${this.userId}/facts/new`
           );
-          const data = await apiCall.data;
+          const data = apiCall.data;
 
           // Log results
-          console.log(`Repsonse type: ${typeof apiCall}`);
-          console.log("Data:", data);
+          console.log(`Repsonse type: ${apiCall.data} Data: ${data}`);
 
           // If server error, throw error
           if (!data) {
@@ -123,27 +161,8 @@ export default defineComponent({
     },
   },
   async mounted() {
-    // Retrieve userId from memory
-    if (storageAvailable(StorageTypes.localStorage)) {
-      let storedUserId = window.localStorage.getItem("userId");
-      if (storedUserId) {
-        console.log(`Stored user ID: ${storedUserId}`);
-        this.userId = storedUserId;
-
-        // Otherwise, call API for new userId
-      } else {
-        const apiCall = await axios.get("http://localhost:3000/user/new");
-        this.userId = apiCall.data.userId;
-        console.log(`New user ID: ${this.userId}`);
-
-        // Store the new ID
-        window.localStorage.setItem("userId", this.userId);
-      }
-
-      // Errors
-    } else {
-      this.handleError(new Error("Local storage is not available."));
-    }
+    await this.fetchUserId();
+    await this.fetchPreviousFacts(this.userId);
   },
 });
 </script>

@@ -3,40 +3,42 @@ import { storeFact } from './db/database';
 
 import { IFact } from '../../app.types';
 import { Fact } from '../javascripts/db/Fact.model';
+import { stringify } from 'node:querystring';
 
-enum Languages {
-  en="en",
-  de="de",
+export enum Languages {
+  en = "en",
+  de = "de",
 }
 
 const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'random'}.json`;
 
-export async function getNewFact(userId: number, language?: Languages): Promise<IFact> {
+export async function getNewFact(userId: string, language?: Languages): Promise<IFact> {
   try {
-    let customUri: string;
-    if (language) customUri = uri + "?language=" + language;
+    // Formulate composite URI
+    let customUri: string = uri;
+    customUri += language ? `?language=${language}` : "";
+    console.log(`Calling external API: ${customUri}`)
 
-    const data: Fact = await axios.get(uri).then((value: AxiosResponse<Fact>) => value.data);
+    // Call API
+    const data: Fact = await axios.get(customUri).then((value: AxiosResponse<Fact>) => value.data);
+    console.log(`Data type: ${typeof data}`);
 
-    console.log("Data type:", typeof data);
-
-    const fact: IFact = {
-      status: "OK",
-      error: null,
-      fact: data
+    // Construct new Fact wrapper
+    const factoid: IFact = {
+      userId: data.id,
+      errors: data.errors,
+      fact: data,
     };
 
-    if (fact)
-      storeFact({
-        userId, fact
-      }, () => {
-        console.log("Finished talking to Mongoose");
-      }, () => {
-        console.log("Error connecting to Mongoose.");
-      });
+    if (factoid)
+      storeFact(factoid,
+        (error: Error) => {
+          if (error) throw new Error(`Could not store fact on DB: ${error}`);
+          else console.log("Stored the fact on DB.");
+        });
 
-    return fact;
+    return factoid;
   } catch (error) {
-    return { status: "Error", error, fact: null }
+    return { userId, errors: error, fact: null }
   }
 }
