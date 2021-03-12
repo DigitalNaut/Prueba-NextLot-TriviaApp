@@ -91,12 +91,12 @@ export default defineComponent({
       // Retrieve userId from memory
       if (storageAvailable(StorageTypes.localStorage)) {
         let storedUserId = window.localStorage.getItem("userId");
+        console.log(`Stored user ID: ${storedUserId}`);
         if (storedUserId) {
-          console.log(`Stored user ID: ${storedUserId}`);
           this.userId = storedUserId;
-
-          // Otherwise, call API for new userId
         } else {
+          // Otherwise, call API for new userId
+          console.log("Fetching user Id...");
           const apiCall = await axios.get("http://localhost:3000/user/new");
           this.userId = apiCall.data.userId;
           console.log(`New user ID: ${this.userId}`);
@@ -124,13 +124,17 @@ export default defineComponent({
         return [];
       }
     },
+
     fetchFact(): Promise<Fact> {
       return new Promise<Fact>(async (resolve, reject) => {
         try {
           // Log activity
           console.log("Fetching fact from server...");
 
-          //if(!this.user)
+          if (!this.userId) {
+            console.log("UserId is not valid.");
+            reject(null);
+          }
 
           // Call local Trivia API
           const apiCall = await axios.get(
@@ -160,6 +164,7 @@ export default defineComponent({
       });
     },
   },
+
   async mounted() {
     await this.fetchUserId();
     await this.fetchPreviousFacts(this.userId);

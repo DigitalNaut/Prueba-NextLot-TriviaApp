@@ -84,7 +84,7 @@ export async function connectToDb(): Promise<boolean> {
       console.log(`Connection to DB is: ${connection.readyState}`);
 
       // Guard
-      if (connection.readyState) return true;
+      if (connection.readyState) { resolve(true); return true }
 
       // Connect to the DB
       await connect(process.env.DB_URI, {
@@ -102,6 +102,7 @@ export async function connectToDb(): Promise<boolean> {
         connection.once('open',
           async () => {
             console.log("Connected to DB");
+            resolve(true)
             return true;
           });
       }
@@ -112,9 +113,10 @@ export async function connectToDb(): Promise<boolean> {
   });
 }
 
+// Store fact in DB
 export async function storeFact(factoid: IFact, resolve: (error?: Error) => void) {
   try {
-    const db = await connectToDb();
+    await connectToDb();
 
     console.log("DB: Building relations...");
     await createRelationships(factoid.userId, factoid.fact); resolve();
@@ -132,10 +134,11 @@ export async function storeFact(factoid: IFact, resolve: (error?: Error) => void
   }
 }
 
+// Get new userId from DB
 export function getNewUser(): Promise<Document> {
   return new Promise(async (resolve, reject) => {
     // Connect to DB
-    const db = await connectToDb();
+    await connectToDb();
 
     // Create new user
     process.stdout.write('Creating a new user...');
@@ -211,7 +214,7 @@ function getFactsFromIds(factIds: string[]): Promise<Fact[]> {
 export async function getUserFacts(userId: string): Promise<Fact[]> {
   return new Promise(async (resolve, reject) => {
     try {
-      const db = await connectToDb();
+      await connectToDb();
 
       // Find UserFacts by given userId
       console.log(`Fetching UserFacts for ID ${userId}`);

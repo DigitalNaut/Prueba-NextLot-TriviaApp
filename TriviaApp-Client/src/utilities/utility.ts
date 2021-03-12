@@ -8,9 +8,9 @@ function handleError(error: string) {
 }
 
 export function storageAvailable(type: StorageTypes): boolean {
-  var storage: Storage | null = null;
+  let storage: Storage | null = null;
   try {
-    // Determine type of storage    
+    // Determine type of storage
     switch (type) {
       case StorageTypes.localStorage:
         storage = window.localStorage;
@@ -22,28 +22,27 @@ export function storageAvailable(type: StorageTypes): boolean {
 
     // Guard
     if (!storage)
-    throw new Error("Could not determine type of storage API.");
-    
+      throw new Error("Could not determine type of storage API.");
+
     // Test
-    var x = '__storage_test__';
+    const x = '__storage_test__';
     storage.setItem(x, x);
     storage.removeItem(x);
     return true;
   }
-  catch (e) {
-    e instanceof DOMException && (
+  catch (error) {
+    handleError(error.message);
+    return error instanceof DOMException && (
       // everything except Firefox
-      e.code === 22 ||
+      error.code === 22 ||
       // Firefox
-      e.code === 1014 ||
+      error.code === 1014 ||
       // test name field too, because code might not be present
       // everything except Firefox
-      e.name === 'QuotaExceededError' ||
+      error.name === 'QuotaExceededError' ||
       // Firefox
-      e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+      error.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
       // acknowledge QuotaExceededError only if there's something already stored
-      (storage && storage.length !== 0);
-    handleError(e.message);
-    return false;
+      (!!storage && storage.length !== 0);;
   }
 }
