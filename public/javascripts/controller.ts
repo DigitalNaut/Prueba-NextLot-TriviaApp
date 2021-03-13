@@ -3,16 +3,15 @@ import * as db from './db/database';
 
 import { IFact } from '../../app.types';
 import { Fact } from '../javascripts/db/Fact.model';
-import { stringify } from 'node:querystring';
 
-export enum Languages {
-  en = "en",
-  de = "de",
+export enum Language {
+  EN = "en",
+  DE = "de",
 }
 
 const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'random'}.json`;
 
-export async function fetchNewFact(userId: string, language?: Languages): Promise<IFact> {
+export async function fetchNewFact(userId: string, language?: Language): Promise<IFact> {
   try {
     // Formulate composite URI
     let customUri: string = uri;

@@ -1,15 +1,15 @@
 <template>
-  <div class="flex flex-row items-center justify-end w-full">
+  <div class="absolute z-50 flex flex-row items-center justify-end w-full px-4 pt-2 md:pr-8 sm:pr-4 lg:pr-16 xl:pr-32">
     <div
-      v-if="this.error"
-      class="p-2 mt-4 mb-4 text-xs rounded-lg text-haiti bg-errorRed"
+      v-if="error"
+      class="p-2 my-4 text-xs rounded-lg text-haiti bg-errorRed"
     >
-      {{ this.error }}
+      {{ error }}
     </div>
     <button
-      class="p-2 m-4 rounded-lg text-bombai bg-haiti"
+      class="p-2 my-4 rounded-lg text-bombai bg-haiti hover:bg-havelockBlue hover:text-haiti border-haiti"
       @click="clearUserId()"
-      @submit="prevent"
+      @v-on:submit.prevent
       :disabled="clearing === true"
     >
       Clear User ID
@@ -26,7 +26,8 @@ export default defineComponent({
   name: "Header",
   data() {
     return {
-      clear: false,
+      clearing: false,
+      error: "",
     };
   },
   methods: {

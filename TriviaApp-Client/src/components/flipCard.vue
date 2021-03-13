@@ -2,19 +2,37 @@
   <div class="absolute z-10 card flip-card">
     <div
       class="relative flex flex-col w-full h-full flip-card-inner"
-      :class="{ flipped: flippedState }"
+      @mouseover="isHovering = true"
+      @mouseout="isHovering = false"
+      @blur="isHovering = false"
+      :class="{
+        flipAnimation: flipped,
+        'hoverL onHover': loaded && isHovering && !flipped,
+        'hoverR onHover': loaded && isHovering && flipped,
+      }"
     >
+      <!-- Front Card -->
       <div
         class="text-white cardFace flip-card-front rounded-l-xl bg-indigo"
-        :class="{ pointer: !flippedState }"
+        :class="{ pointer: !flipped }"
       >
-        {{ msg }}
+        <!-- Message -->
+        <div class="flex flex-row justify-around">
+          <span :class="{ 'animate-bounce ': isHovering && !flipped && loaded }">
+            {{ msg }}
+          </span>
+        </div>
       </div>
+      <!-- Back Card -->
       <div
         class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti"
-        :class="{ pointer: flippedState }"
+        :class="{ pointer: flipped }"
       >
-        {{ msg }}
+        <div class="flex flex-row justify-around">
+          <span :class="{ 'animate-bounce': isHovering && flipped && loaded }">
+            {{ msg }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -25,12 +43,21 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "flip-card",
+  data() {
+    return {
+      isHovering: false,
+    };
+  },
   props: {
+    loaded: {
+      type: Boolean,
+      required: true,
+    },
     msg: {
       type: String,
       required: true,
     },
-    flippedState: {
+    flipped: {
       type: Boolean,
       required: true,
     },
@@ -57,8 +84,19 @@ export default defineComponent({
 }
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
-.flipped {
+.flipAnimation {
   transform: rotateY(180deg);
+}
+/* Hover */
+.onHover {
+  transition: transform 0.1s ease-out;
+  position: relative;
+}
+.hoverL {
+  transform: rotateY(10deg);
+}
+.hoverR {
+  transform: rotateY(170deg);
 }
 
 /* Position the front and back side */

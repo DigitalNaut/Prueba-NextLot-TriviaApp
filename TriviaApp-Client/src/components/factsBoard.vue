@@ -1,57 +1,71 @@
 <template>
   <div
-    class="w-full p-0 m-0 overflow-y-auto bg-white rounded-md md:max-w-screen-md xl:max-w-screen-lg"
+    class="w-full p-0 pt-12 m-0 overflow-y-auto rounded-md shadow-lg bg-gradient-to-b to-bombai from-white md:w-11/12 xl:max-w-screen-lg"
   >
-    <div class="flex flex-col p-4 m-4 text-base text-haiti font-lora">
-      <div v-if="list.length">
-        <span
-          class="flex flex-row justify-end pr-4 text-lg font-semibold text-center"
-        >
+    <div class="flex flex-col p-4 m-4 text-base font-lora">
+      <div v-if="list.length" class="flex-row text-right">
+        <!-- Counter -->
+        <span class="px-4 py-2 mr-4 text-white rounded-full lex bg-indigo">
           Number of facts:
-          <span class="ml-3 rounded-full text-haiti w-7 h-7 bg-bombai">{{
-            list.length
-          }}</span></span
+          <!-- Number -->
+          <span class="ml-3 w-7 h-7">
+            {{ list.length }}
+          </span></span
         >
+
+        <!-- Children -->
+        <component :is="children"></component>
+
+        <!-- List of Fact Cards -->
         <ol>
           <li v-for="fact in list" :key="fact.id">
-            <ul class="p-8 m-4 text-white rounded-md bg-haiti">
-              <li>{{ fact.text }}</li>
+            <!-- Fact card -->
+            <ol
+              class="px-4 py-12 m-8 text-xl text-center text-white rounded-md shadow-md md:px-8 lg:px-16 bg-haiti"
+            >
+              <!-- Fact text -->
+              <li class="p-8">{{ fact.text }}</li>
               <li
-                class="flex flex-row justify-between px-8 pt-4 text-sm text-havelockBlue"
+                class="flex flex-row justify-around p-8 text-sm text-havelockBlue"
               >
+                <!-- Language -->
                 Lang: {{ fact.language.toUpperCase() }}
 
+                <!-- Source & permalink -->
                 <span class="justify-self-end">
                   <a href="{{fact.source}}" class="italic"
                     >Src: {{ fact.source }}</a
                   >
                   <span class="px-4">|</span>
-                  <a href="{{fact.permalink}}" class="italic"
-                    >Permalink</a
-                  >
+                  <a :href="fact.permalink" class="italic">Permalink</a>
                 </span>
               </li>
-            </ul>
+            </ol>
           </li>
         </ol>
       </div>
       <div
-        class="flex items-center justify-center w-full h-full text-xl"
+        class="box-content flex items-center justify-center w-full h-full py-8 text-xl text-haiti"
         v-else-if="loaded"
       >
-        <p>{{ msg }}</p>
+        <div
+          class="flex justify-center p-16 m-4 text-xl text-haiti rounded-xl bg-bombai"
+        >
+          {{ msg }}
+        </div>
       </div>
-      <span
+      <div
         v-if="!loaded"
-        class="flex justify-center p-16 m-4 text-xl text-white rounded-xl bg-bombai"
-        >Loading...</span
+        class="flex justify-center p-16 m-4 text-xl text-white rounded-xl bg-bombai animate-pulse"
       >
+        Loading...
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, Component } from "vue";
 import { Fact } from "../App.vue";
 
 export default defineComponent({
@@ -68,6 +82,12 @@ export default defineComponent({
     loaded: {
       required: true,
       type: Boolean,
+    },
+    children: {
+      name: "children",
+      type: [String, Object],
+      default: "div",
+      required: false,
     },
   },
 });

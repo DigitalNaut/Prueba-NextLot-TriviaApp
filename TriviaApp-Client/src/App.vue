@@ -1,34 +1,27 @@
 <template>
   <div class="flex flex-col app">
     <div
-      class="flex flex-col w-full p-0 m-0 align-middle place-items-center h-half"
+      class="flex flex-col w-full h-full min-h-screen p-0 m-0 mt-12 align-middle place-items-center"
     >
       <Header />
-      <div class="flex p-0 m-0">
+      <div class="flex p-0 m-0 -mb-12">
         <FlipCard
+          :loaded="loadedFact"
           msg="Did you know...?"
-          :flippedState="isFlipped"
-          @click="this.flipCard()"
-        ></FlipCard>
-        <DisplayCard
-          :msg="fact1"
-          :lang="factLang"
-          class="rounded-l-xl"
-        ></DisplayCard>
-        <DisplayCard
-          :msg="fact2"
-          :lang="factLang"
-          class="rounded-r-xl"
-        ></DisplayCard>
+          :flipped="isFlipped"
+          @click="flipCard()"
+        />
+        <DisplayCard :msg="fact1" :lang="factlang" class="rounded-l-xl" />
+        <DisplayCard :msg="fact2" :lang="factlang" class="rounded-r-xl" />
       </div>
+      <FactsBoard
+        msg="Click on the blue card to get the facts!"
+        :list="this.factsList"
+        :loaded="loadedFacts"
+      >
+        <p>Something</p>
+      </FactsBoard>
     </div>
-
-    <FactsBoard
-      class="h-half"
-      msg="Click on the blue card to get the facts!"
-      :list="this.factsList"
-      :loaded="loadedFacts"
-    ></FactsBoard>
   </div>
 </template>
 
@@ -58,6 +51,7 @@ export default defineComponent({
   data() {
     return {
       loadedFacts: false,
+      loadedFact: false,
       factsList: new Array<Fact>(),
       fact1: "",
       fact2: "It's a fact!", // Start message,
@@ -79,20 +73,22 @@ export default defineComponent({
       this.error = `${msg ? msg + ": " : ""}` + `${error ? error.message : ""}`;
     },
     displayFact(text: string, language = "") {
+      this.loadedFact = true;
       // Flip between card displays
       if (this.fact1 === "") {
         this.fact1 = text;
         this.fact2 = "";
-        this.isFlipped = true;
+        return true;
       } else {
         this.fact2 = text;
         this.fact1 = "";
-        this.isFlipped = false;
+        this.factlang = language.toUpperCase();
+        return false;
       }
-
-      this.factlang = language;
     },
     async flipCard() {
+      this.loadedFact = false;
+
       // Get a new fact
       let fact: Fact = await this.fetchNewFact();
 
@@ -103,7 +99,7 @@ export default defineComponent({
       this.factsList.unshift(fact);
 
       // Display the fact
-      this.displayFact(fact.text, fact.language);
+      this.isFlipped = this.displayFact(fact.text, fact.language);
     },
     async fetchUserId(): Promise<void> {
       return new Promise<void>(async (resolve, reject) => {
@@ -225,6 +221,7 @@ export default defineComponent({
     await this.fetchUserId();
     this.factsList = await this.fetchPreviousFacts(this.userId);
     this.loadedFacts = true;
+    this.loadedFact = true;
   },
 });
 </script>
