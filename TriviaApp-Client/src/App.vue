@@ -1,33 +1,28 @@
 <template>
   <div class="flex flex-col app">
     <div
-      class="flex flex-col justify-around w-full p-0 m-0 align-middle place-items-center h-half"
+      class="flex flex-col w-full p-0 m-0 align-middle place-items-center h-half"
     >
-      <div class="flex flex-row items-center justify-end w-full">
-        <div
-          v-if="this.error"
-          class="p-2 mt-4 mb-4 text-xs rounded-lg text-haiti bg-errorRed"
-        >
-          {{ this.error }}
-        </div>
-        <button
-          class="p-2 m-4 rounded-lg text-bombai bg-haiti"
-          @click="clearUserId()"
-          @submit="prevent"
-        >
-          Clear User ID
-        </button>
-      </div>
+      <Header />
       <div class="flex p-0 m-0">
         <FlipCard
           msg="Did you know...?"
           :flippedState="isFlipped"
           @click="this.flipCard()"
         ></FlipCard>
-        <DisplayCard :msg="fact1" :lang="factLang" class="rounded-l-xl"></DisplayCard>
-        <DisplayCard :msg="fact2" :lang="factLang" class="rounded-r-xl"></DisplayCard>
+        <DisplayCard
+          :msg="fact1"
+          :lang="factLang"
+          class="rounded-l-xl"
+        ></DisplayCard>
+        <DisplayCard
+          :msg="fact2"
+          :lang="factLang"
+          class="rounded-r-xl"
+        ></DisplayCard>
       </div>
     </div>
+
     <FactsBoard
       class="h-half"
       msg="Click on the blue card to get the facts!"
@@ -46,6 +41,7 @@ import { storageAvailable, StorageTypes } from "./utilities/utility";
 import FlipCard from "./components/flipCard.vue";
 import FactsBoard from "./components/factsBoard.vue";
 import DisplayCard from "./components/displayCard.vue";
+import Header from "./components/header.vue";
 
 export interface Fact {
   id: string;
@@ -59,7 +55,7 @@ export interface Fact {
 
 export default defineComponent({
   name: "app",
-  data: function () {
+  data() {
     return {
       loadedFacts: false,
       factsList: new Array<Fact>(),
@@ -75,19 +71,14 @@ export default defineComponent({
     FlipCard,
     FactsBoard,
     DisplayCard,
+    Header,
   },
   methods: {
     // Log errors
     handleError(error: Error, msg?: string) {
       this.error = `${msg ? msg + ": " : ""}` + `${error ? error.message : ""}`;
     },
-    clearUserId() {
-      if (storageAvailable(StorageTypes.localStorage)) {
-        window.localStorage.setItem("userId", "");
-        location.reload();
-      }
-    },
-    displayFact(text: string, language: string) {
+    displayFact(text: string, language = "") {
       // Flip between card displays
       if (this.fact1 === "") {
         this.fact1 = text;
@@ -112,8 +103,7 @@ export default defineComponent({
       this.factsList.unshift(fact);
 
       // Display the fact
-      console.log(fact.language);
-      this.displayFact(fact.text, fact.language.toUpperCase());
+      this.displayFact(fact.text, fact.language);
     },
     async fetchUserId(): Promise<void> {
       return new Promise<void>(async (resolve, reject) => {

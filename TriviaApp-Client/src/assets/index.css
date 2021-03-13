@@ -17,14 +17,14 @@
 
 @layer components {
   .app {
-    @apply flex flex-col items-center justify-center min-h-screen p-2 text-indigo bg-gradient-to-b from-indigo to-haiti;
+    @apply flex flex-col items-center justify-center p-2 text-indigo bg-gradient-to-b from-indigo to-haiti;
 
     font-family: Avenir, Helvetica, Arial, sans-serif;
   }
   .card {
-    @apply flex bg-white shadow-lg h-96 w-96
+    @apply flex h-64 bg-white shadow-lg w-half md:w-96 md:h-72;
   }
   .cardFace {
-    @apply flex flex-col justify-center text-3xl italic text-center text-indigo font-rockSalt;
+    @apply flex flex-col justify-center p-4 text-3xl italic text-center text-indigo font-rockSalt;
   }
 }

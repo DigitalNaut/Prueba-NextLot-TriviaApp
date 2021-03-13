@@ -14,8 +14,11 @@ module.exports = {
   theme: {
     extend: {
       height: {
-        'half': '49vh',
-      }
+        half: "49vh",
+      },
+      width: {
+        half: "49vw",
+      },
     },
     fontFamily: {
       lora: ["Lora", ...defaultTheme.fontFamily.sans],
