@@ -32,6 +32,7 @@
       class="h-half"
       msg="Click on the blue card to get the facts!"
       :list="this.factsList"
+      :loaded="loadedFacts"
     ></FactsBoard>
   </div>
 </template>
@@ -60,6 +61,7 @@ export default defineComponent({
   name: "app",
   data: function () {
     return {
+      loadedFacts: false,
       factsList: new Array<Fact>(),
       fact1: "",
       fact2: "It's a fact!", // Start message,
@@ -165,7 +167,7 @@ export default defineComponent({
       return new Promise<Fact[]>(async (resolve, reject) => {
         try {
           console.log(`Calling http://localhost:3000/user/${userId}/facts/all`);
-          const previousFacts:Fact[] = await axios
+          const previousFacts: Fact[] = await axios
             .get(`user/${userId}/facts/all`, {
               method: "GET",
               baseURL: "http://localhost:3000",
@@ -179,14 +181,12 @@ export default defineComponent({
               resolve([]);
             });
 
-            console.log(`Prev facts:`, previousFacts)
-            resolve(previousFacts);
+          console.log(`Prev facts:`, previousFacts);
+          resolve(previousFacts);
         } catch (error) {
           this.handleError(new Error("Could not retrieve fact history"));
           reject([]);
         }
-
-
       });
     },
 
@@ -236,6 +236,7 @@ export default defineComponent({
   async mounted() {
     await this.fetchUserId();
     this.factsList = await this.fetchPreviousFacts(this.userId);
+    this.loadedFacts = true;
   },
 });
 </script>

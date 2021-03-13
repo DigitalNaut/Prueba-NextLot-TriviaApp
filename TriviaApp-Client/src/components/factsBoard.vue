@@ -4,7 +4,8 @@
       <div v-if="list.length">
         <span
           class="flex flex-row justify-end pr-4 text-lg font-semibold text-center"
-          >Number of facts:
+        >
+          Number of facts:
           <span class="ml-3 rounded-full text-haiti w-7 h-7 bg-bombai">{{
             list.length
           }}</span></span
@@ -24,10 +25,15 @@
       </div>
       <div
         class="flex items-center justify-center w-full h-full text-xl"
-        v-else
+        v-else-if="loaded"
       >
         <p>{{ msg }}</p>
       </div>
+      <span
+        v-if="!loaded"
+        class="flex justify-center p-16 m-4 text-xl text-white rounded-xl bg-bombai"
+        >Loading...</span
+      >
     </div>
   </div>
 </template>
@@ -46,6 +52,10 @@ export default defineComponent({
     list: {
       required: true,
       type: Object as () => Array<Fact>,
+    },
+    loaded: {
+      required: true,
+      type: Boolean,
     },
   },
 });
