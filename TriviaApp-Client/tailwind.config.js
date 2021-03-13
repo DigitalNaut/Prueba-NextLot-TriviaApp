@@ -27,6 +27,7 @@ module.exports = {
       bombai: "#B2B5C0",
       indigo: "#454EBB",
       havelockBlue: "#65A4DD",
+      errorRed: "#FCB3B5",
     },
   },
 };

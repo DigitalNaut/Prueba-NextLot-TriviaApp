@@ -4,22 +4,24 @@ import '../../../app.types';
 
 const FactSchema = new Schema({
   _id: String,
-  User: String,
-  Text: String,
-  Language: String,
-  Source: String,
-  SourceUrl: String,
+  user: String,
+  text: String,
+  language: String,
+  source: String,
+  source_url: String,
+  permalink: String,
 }, { timestamps: true });
 
 FactSchema.plugin(uniqueValidator, { message: "Fact already exists." });
 
 export interface Fact extends Document {
   _id: string,
-  User: string,
-  Text: string,
-  Language: string,
-  Source: string,
-  Source_url: string,
+  user: string,
+  text: string,
+  language: string,
+  source: string,
+  source_url: string,
+  permalink: string,
 }
 
 export default model<Fact>('Fact', FactSchema);

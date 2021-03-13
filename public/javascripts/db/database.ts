@@ -1,111 +1,134 @@
-import { connect, connection, Types, Connection, Document } from 'mongoose';
-import UserFactsModel, { UserFacts, UserFactsSchema } from './UserFacts.model';
-import UserModel, { UserSchema } from './User.model';
+import { connect, connection, Types } from 'mongoose';
+import UserFactModel, { UserFact } from './UserFact.model';
+import UserModel, { User } from './User.model';
 import FactModel, { Fact } from './Fact.model';
 import { IFact } from '../../../app.types';
 import '../../Utility';
 
-function handleError(error: Error) {
+function handleError(error: string) {
   console.error(`Internal database error:  ${error}`);
 }
 
-async function createRelationships(UserId: string, FactData: Fact): Promise<number> {
+async function createFactOnDb(factData: Fact): Promise<Fact> {
+  // Connect to DB
+  await connectToDb();
+  console.log(`----- Creating Fact on DB ------`);
+
+
   return new Promise(async (resolve, reject) => {
     try {
-      // Guards
-      if (!Types.ObjectId.isValid(UserId)) {
-        console.log(`UserId in URL is not valid: ${UserId}`); return 0;
-      }
+      console.log(`Attempting to store Fact with ID (${factData.id})`);
+      const fact = await FactModel.findOneAndUpdate({ _id: factData.id }, factData, { new: true, upsert: true });
 
-      // Create a User if none found
-      let user: Document = await UserModel.findById(UserId);
+      resolve(fact);
+      // Error handling
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
 
-      if (!user) {
-        console.log("Creating User...");
-        const newUser = await getNewUser();
-        user = newUser;
-      }
-      console.log("Target User ID:", user._id);
+async function buildUserFactOnDb(factoid: IFact): Promise<number> {
+  // Connect to DB
+  await connectToDb();
+  console.log(`----- Building UserFact on DB ------`);
 
-      // Create a Fact if none found
-      const fact = await FactModel.findOne({ _id: FactData.id });
-      if (!fact) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log(`User ID on Factoid:`, factoid.userId);
 
-        // Transcribe fact JSON to object
-        console.log("Saving fact...");
+      // Find user from factoid
+      const user: User = await UserModel.findOneAndUpdate({ _id: factoid.userId }, {}, { new: true, upsert: true });
+      console.log(`User with ID ${factoid.userId} was: ${user}`);
 
-        await fact.updateOne({
-          _id: FactData.id,
-          User: "",
-          Text: FactData.Text,
-          Language: FactData.Language,
-          Source: FactData.Source,
-          Source_url: FactData.Source_url,
-        });
-
-        await fact.save();
-      }
-
-      console.log("Using Fact:", fact._id);
-
-      // Create a UserFacts if none found
-
-      let userFact = await UserFactsModel.findOne({ User: user._id, Fact: FactData._id });
-
-      if (!userFact) {
-        console.log("Creating UserFact...");
-
-        userFact = new UserFactsModel();
-
-        userFact._id = Types.ObjectId();
-        await userFact.save();
-        await userFact.updateOne({
-          User: user._id,
-          Fact: fact._id
-        });
-      }
+      // Create a UserFact on DB if none found
+      const userFact: UserFact = await createUserFact(factoid.userId, factoid.fact.id);
 
       console.log("Using UserFact:", userFact.id);
 
       // Resolve promise
-      resolve(user._id);
+      resolve(userFact.id);
 
       // Handle errors
     } catch (error) {
-      console.log("Could not create relationship:", error);
+      console.log("Could not build UserFact on DB:", error);
       reject(0);
     }
   });
 }
 
+export async function createUserFact(userId: string, factId: string): Promise<UserFact> {
+  // Connect to DB
+  await connectToDb();
+  console.log(`----- Creating UserFact ------`);
+
+
+  return new Promise<UserFact>(async (resolve, reject) => {
+    try {
+      let userFact = await UserFactModel.findOne({ User: userId, Fact: factId });
+
+      if (!userFact) {
+        console.log(`UserFact not found, creating: { userId: ${userId}, factId: ${factId}`);
+        userFact = await UserFactModel.create({ User: userId, Fact: factId });
+        await userFact.save();
+        console.log(`Saved UserFact with ID (${userFact.id})`);
+      } else
+        console.log("Found UserFact on DB.");
+
+      resolve(userFact);
+
+    } catch (error) {
+      // Handle errors
+      handleError(`Could not create UserFact: ${error}`)
+      reject(error);
+    }
+  })
+}
+
 export async function connectToDb(): Promise<boolean> {
   return new Promise<boolean>(async (resolve, reject) => {
     try {
-      console.log(`Connection to DB is: ${connection.readyState}`);
-
       // Guard
-      if (connection.readyState) { resolve(true); return true }
+      function guard() {
+        process.stdout.write(`DB status: `);
+
+        switch (connection.readyState) {
+          case 1:
+            process.stdout.write(`Connected.\n`);
+            resolve(true);
+            return true;
+          case 2:
+          case 3:
+            process.stdout.write(`Not ready.\n`);
+            resolve(false);
+            return false;
+          default:
+            process.stdout.write(`Disconnected.\n`);
+            return false;
+        }
+      }
+      if (guard()) return;
 
       // Connect to the DB
+      console.log("Attempting connection to DB.")
       await connect(process.env.DB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       });
 
       // Report external errors
-      connection.on('error', error => { throw new Error(`Could not connect to DB: ${error}`) });
+      connection.on('error', (error) => { throw new Error(`Could not connect to DB: ${error}`) });
 
-      if (connection.readyState)
-        return true;
-      else {
-        // Success callback
-        connection.once('open',
-          async () => {
-            console.log("Connected to DB");
-            resolve(true)
-            return true;
-          });
-      }
+      // Reguard
+      if (guard()) return;
+
+      // Success callback
+      connection.once('open',
+        async () => {
+          console.log("Connected to DB");
+          resolve(true)
+          return true;
+        });
     }
     catch (error) {
       reject();
@@ -114,129 +137,83 @@ export async function connectToDb(): Promise<boolean> {
 }
 
 // Store fact in DB
-export async function storeFact(factoid: IFact, resolve: (error?: Error) => void) {
-  try {
-    await connectToDb();
+export async function storeFactoid(factoid: IFact, resolve: (error?: Error) => void) {
+  // Connect to DB
+  await connectToDb();
+  console.log(`----- Storing Factoid ------`);
 
-    console.log("DB: Building relations...");
-    await createRelationships(factoid.userId, factoid.fact); resolve();
+  try {
+    if (!factoid.fact) throw new Error(`Fact was null: ${factoid.fact}`);
+
+    // Create a new fact if it doesn't exist
+    await createFactOnDb(factoid.fact);
+
+    await buildUserFactOnDb(factoid);
 
     resolve();
   } catch (error) {
-    handleError(new Error("Could not store fact in DB."));
+    handleError("Could not store fact in DB.");
     resolve(error);
-  }
-
-  if (connection.readyState) {
-    // Disconnect DB
-    console.log("Disconnected Mongoose");
-    await connection.close();
   }
 }
 
 // Get new userId from DB
-export function getNewUser(): Promise<Document> {
-  return new Promise(async (resolve, reject) => {
-    // Connect to DB
-    await connectToDb();
+export async function getNewUserID(): Promise<string> {
+  // Connect to DB
+  await connectToDb();
+  console.log(`----- Getting New User ID ------`);
 
+
+  return new Promise(async (resolve, reject) => {
     // Create new user
     process.stdout.write('Creating a new user...');
-    const newUser = new UserModel();
-
-    // Create new ID
-    const newId = Types.ObjectId();
-    process.stdout.write(`with ID: ${newId}...\n`)
-    newUser._id = newId;
+    const newUser: User = await UserModel.create({ _id: Types.ObjectId() });
 
     // Save it to DB
     try {
       process.stdout.write("Saving to DB....");
       await newUser.save();
       process.stdout.write("OK.\n");
-      resolve(newUser);
+      resolve(newUser._id);
     } catch (error) {
       // Report error on failure
       process.stdout.write("failed.\n");
       handleError(error);
-      reject(null);
+      reject("");
     }
-
-    // Disconnect DB
-    console.log("Disconnected MongoDB");
-    await connection.close();
 
     return newUser;
   });
 }
 
-function getFactsFromIds(factIds: string[]): Promise<Fact[]> {
-  return new Promise((resolve, reject) => {
-    try {
-      // Build Facts array
-      const factsList: Fact[] = new Array();
-      if (factIds.length)
-        factIds.forEach(
-
-          // Parse individual fact
-          async (factId: string, index: number, array: string[]) => {
-            await FactModel.findById(
-              { _id: factId },
-              '',
-              { useFindAndModify: false, limit: 100, },
-              async (error: Error, doc: Fact) => {
-
-                // Display progress
-                const progress = ((index + 1) / array.length * 100).clamp(0, 100);
-                process.stdout.write(`Inspecting ${progress}% : ${error ? `Error: ${error}` : `OK!`}\r`/* ,
-                  (err) => err && process.stdout.clearLine(-1) */);
-
-                // If valid, push it to the array,
-                // else log error
-                if (error) console.log("Error parsing: ", factId, " Error:", error);
-                else factsList.push(doc);
-              })
-
-            // Once reached the end of the array
-            // Resolve promise
-            if (index === array.length - 1) {
-              console.log(`Facts retrieved: ${factsList.length} `);
-              resolve(factsList);
-            }
-          });
-    } catch (error) {
-      reject([])
-    }
-  });
-
-}
-
 export async function getUserFacts(userId: string): Promise<Fact[]> {
+  // Connect to DB
+  await connectToDb();
+  console.log(`----- Getting User's Facts ------`);
+
   return new Promise(async (resolve, reject) => {
     try {
-      await connectToDb();
+      // Find UserFact's by given userId
+      console.log(`Fetching User's Facts for ID ${userId}`);
 
-      // Find UserFacts by given userId
-      console.log(`Fetching UserFacts for ID ${userId}`);
-      const userFacts = await UserFactsModel.find({ User: userId },
-        async (error: Error, docs: Document<UserFacts>[]) => {
+      const userFacts = await UserFactModel.find({ User: userId }, 'Fact');
+      const factIds: string[] = userFacts.map((userFact) => userFact.Fact);
 
-          // Guards
-          if (error) throw new Error(`Could not find UserFacts: ${error} `);
+      // Find the User's Facts
+      const facts: Fact[] = await FactModel.find({
+        '_id': { $in: factIds }
+      });
 
-          // Find UserFacts for user
-          const factIds = docs.map((doc: UserFacts) => {
-            if (doc.User.length)
-              return doc.Fact[0];
-            else return "";
-          });
-          console.log(`Found ${factIds.length} Facts for user...`);
+      console.log(`Found ${userFacts.length} Fact IDs for user and ${facts.length} related Facts.`);
 
-          // Construct
-          const factsList = await getFactsFromIds(factIds);
-          resolve(factsList);
-        });
+      // Guard zero-length
+      if (!facts.length) { resolve([]); return; }
+
+      // Construct
+      resolve(facts);
     } catch (error) {
+      // Handle errors
+      handleError(`Could not find User's Facts: ${error} `);
       reject([]);
     }
   });

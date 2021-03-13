@@ -1,5 +1,5 @@
 import { default as axios, AxiosResponse } from 'axios'; // Provides autocomplete and parameter typings
-import { storeFact } from './db/database';
+import * as db from './db/database';
 
 import { IFact } from '../../app.types';
 import { Fact } from '../javascripts/db/Fact.model';
@@ -12,7 +12,7 @@ export enum Languages {
 
 const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'random'}.json`;
 
-export async function getNewFact(userId: string, language?: Languages): Promise<IFact> {
+export async function fetchNewFact(userId: string, language?: Languages): Promise<IFact> {
   try {
     // Formulate composite URI
     let customUri: string = uri;
@@ -20,21 +20,23 @@ export async function getNewFact(userId: string, language?: Languages): Promise<
     console.log(`Calling external API: ${customUri}`)
 
     // Call API
-    const data: Fact = await axios.get(customUri).then((value: AxiosResponse<Fact>) => value.data);
-    console.log(`Data type: ${typeof data}`);
+    const factData: Fact = await axios.get(customUri)
+      .then((response: AxiosResponse<Fact>) => response.data);
 
     // Construct new Fact wrapper
     const factoid: IFact = {
-      userId: data.id,
-      errors: data.errors,
-      fact: data,
+      // headers
+      userId,
+      errors: factData.errors,
+      // payload
+      fact: factData,
     };
 
     if (factoid)
-      storeFact(factoid,
+      db.storeFactoid(factoid,
         (error: Error) => {
           if (error) throw new Error(`Could not store fact on DB: ${error}`);
-          else console.log("Stored the fact on DB.");
+          console.log("Stored the fact on DB.");
         });
 
     return factoid;

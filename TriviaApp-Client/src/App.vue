@@ -1,13 +1,32 @@
 <template>
-  <div class="app">
-    <div class="flex p-0 m-0 place-items-center h-half">
-      <FlipCard
-        msg="Did you know...?"
-        :flippedState="isFlipped"
-        @click="this.flipCard()"
-      ></FlipCard>
-      <FactCard :msg="fact1" :lang="factLang" class="rounded-l-xl"></FactCard>
-      <FactCard :msg="fact2" :lang="factLang" class="rounded-r-xl"></FactCard>
+  <div class="flex flex-col app">
+    <div
+      class="flex flex-col justify-around w-full p-0 m-0 align-middle place-items-center h-half"
+    >
+      <div class="flex flex-row items-center justify-end w-full">
+        <div
+          v-if="this.error"
+          class="p-2 mt-4 mb-4 text-xs rounded-lg text-haiti bg-errorRed"
+        >
+          {{ this.error }}
+        </div>
+        <button
+          class="p-2 m-4 rounded-lg text-bombai bg-haiti"
+          @click="clearUserId()"
+          @submit="prevent"
+        >
+          Clear User ID
+        </button>
+      </div>
+      <div class="flex p-0 m-0">
+        <FlipCard
+          msg="Did you know...?"
+          :flippedState="isFlipped"
+          @click="this.flipCard()"
+        ></FlipCard>
+        <FactCard :msg="fact1" :lang="factLang" class="rounded-l-xl"></FactCard>
+        <FactCard :msg="fact2" :lang="factLang" class="rounded-r-xl"></FactCard>
+      </div>
     </div>
     <FactsBoard
       class="h-half"
@@ -47,6 +66,7 @@ export default defineComponent({
       factlang: "",
       isFlipped: false,
       userId: "",
+      error: "",
     };
   },
   components: {
@@ -56,8 +76,14 @@ export default defineComponent({
   },
   methods: {
     // Log errors
-    handleError(error: Error) {
-      console.error(error);
+    handleError(error: Error, msg?: string) {
+      this.error = `${msg ? msg + ": " : ""}` + `${error ? error.message : ""}`;
+    },
+    clearUserId() {
+      if (storageAvailable(StorageTypes.localStorage)) {
+        window.localStorage.setItem("userId", "");
+        location.reload();
+      }
     },
     displayFact(text: string, language: string) {
       // Flip between card displays
@@ -75,7 +101,7 @@ export default defineComponent({
     },
     async flipCard() {
       // Get a new fact
-      let fact: Fact = await this.fetchFact();
+      let fact: Fact = await this.fetchNewFact();
 
       // Safeguard
       if (!fact) return this.handleError(new Error("No fact received."));
@@ -87,45 +113,84 @@ export default defineComponent({
       console.log(fact.language);
       this.displayFact(fact.text, fact.language.toUpperCase());
     },
-    async fetchUserId() {
-      // Retrieve userId from memory
-      if (storageAvailable(StorageTypes.localStorage)) {
-        let storedUserId = window.localStorage.getItem("userId");
-        console.log(`Stored user ID: ${storedUserId}`);
-        if (storedUserId) {
-          this.userId = storedUserId;
-        } else {
-          // Otherwise, call API for new userId
-          console.log("Fetching user Id...");
-          const apiCall = await axios.get("http://localhost:3000/user/new");
-          this.userId = apiCall.data.userId;
-          console.log(`New user ID: ${this.userId}`);
+    async fetchUserId(): Promise<void> {
+      return new Promise<void>(async (resolve, reject) => {
+        try {
+          // Retrieve userId from memory
+          if (storageAvailable(StorageTypes.localStorage)) {
+            let storedUserId = window.localStorage.getItem("userId");
+            console.log(`Stored user ID: ${storedUserId}`);
+            if (storedUserId) {
+              this.userId = storedUserId;
+            } else {
+              // Otherwise, call API for new userId
+              console.log("Fetching user Id...");
+              const newUser = await axios
+                .get("http://localhost:3000/user/new")
+                .then((value) => value.data)
+                .catch((reason) =>
+                  this.handleError(
+                    new Error(reason),
+                    "Could not fetch new user ID."
+                  )
+                );
 
-          // Store the new ID
-          window.localStorage.setItem("userId", this.userId);
+              if (!newUser)
+                throw new Error(`Could not get new user ID from server.`);
+              else if (!newUser.userId)
+                throw new Error(
+                  `Invalid user ID (${newUser ? newUser.userId : newUser})`
+                );
+
+              this.userId = newUser.userId;
+              console.log(`New user ID: ${this.userId}`);
+
+              // Store the new ID
+              window.localStorage.setItem("userId", this.userId);
+            }
+
+            resolve();
+            // Errors
+          } else {
+            throw new Error("Local storage is not available.");
+          }
+        } catch (error) {
+          this.handleError(error);
+          reject();
+        }
+      });
+    },
+
+    async fetchPreviousFacts(userId: string): Promise<Fact[]> {
+      return new Promise<Fact[]>(async (resolve, reject) => {
+        try {
+          console.log(`Calling http://localhost:3000/user/${userId}/facts/all`);
+          const previousFacts:Fact[] = await axios
+            .get(`user/${userId}/facts/all`, {
+              method: "GET",
+              baseURL: "http://localhost:3000",
+              timeout: 3000,
+            })
+            .then((value) => {
+              return value.data.facts;
+            })
+            .catch((reason) => {
+              this.handleError(reason, "Could not connect to API");
+              resolve([]);
+            });
+
+            console.log(`Prev facts:`, previousFacts)
+            resolve(previousFacts);
+        } catch (error) {
+          this.handleError(new Error("Could not retrieve fact history"));
+          reject([]);
         }
 
-        // Errors
-      } else {
-        this.handleError(new Error("Local storage is not available."));
-      }
-    },
-    async fetchPreviousFacts(userId: string): Promise<[]> {
-      try {
-        const apiCall = await axios.get(
-          `http://localhost:3000/user/${userId}/facts/all`
-        );
-        let data = apiCall?.data?.facts;
-        console.log("Fetched previous User Facts:", data);
 
-        return data;
-      } catch (error) {
-        this.handleError(new Error("Could not fetch previous User Facts."));
-        return [];
-      }
+      });
     },
 
-    fetchFact(): Promise<Fact> {
+    fetchNewFact(): Promise<Fact> {
       return new Promise<Fact>(async (resolve, reject) => {
         try {
           // Log activity
@@ -137,28 +202,31 @@ export default defineComponent({
           }
 
           // Call local Trivia API
-          const apiCall = await axios.get(
-            `http://localhost:3000/user/${this.userId}/facts/new`
-          );
+          const apiCall = await axios.get(`/user/${this.userId}/facts/new`, {
+            method: "GET",
+            baseURL: "http://localhost:3000",
+            timeout: 3000,
+          });
           const data = apiCall.data;
 
           // Log results
-          console.log(`Repsonse type: ${apiCall.data} Data: ${data}`);
+          console.log(`New factoid:`, data);
 
           // If server error, throw error
           if (!data) {
             console.log(`Server response not a JSON.`);
-            this.handleError(new Error("External server error"));
+            this.handleError(
+              new Error("External server error: unknown format received.")
+            );
             reject(null);
           } else {
-            // Log & resolve fact
-            console.log(`Response: ${data.fact}`);
+            // Resolve fact
             resolve(data.fact);
           }
 
           // Handle errors & reject
         } catch (error) {
-          this.handleError(new Error(`Error ocurred fetching data: ${error}`));
+          this.handleError(new Error(`Could not connect to API.`));
           reject(null);
         }
       });
@@ -167,7 +235,7 @@ export default defineComponent({
 
   async mounted() {
     await this.fetchUserId();
-    await this.fetchPreviousFacts(this.userId);
+    this.factsList = await this.fetchPreviousFacts(this.userId);
   },
 });
 </script>

@@ -1,15 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 
-import { getNewFact, Languages } from "../public/javascripts/controller";
+import { fetchNewFact, Languages as Language } from "../public/javascripts/controller";
 import { Types } from 'mongoose';
 import { getUserFacts } from '../public/javascripts/db/database';
 
 const router = express.Router();
-
-export function handleError(error: Error) {
-  console.error("Error while manipulating facts:", error);
-}
 
 /* GET new Fact. */
 router.get('/user/:userId/facts/new', cors(),
@@ -18,10 +14,10 @@ router.get('/user/:userId/facts/new', cors(),
     const userId = req.params.userId;
 
     // Fetch fact from controller
-    const newFact = await getNewFact(userId, Languages.en);
+    const newFact = await fetchNewFact(userId, Language.en);
 
     // Display result
-    console.log("Response:", newFact);
+    console.log(`Trivia API responded with Fact:`, newFact.fact);
     res.send(newFact);
   });
 
