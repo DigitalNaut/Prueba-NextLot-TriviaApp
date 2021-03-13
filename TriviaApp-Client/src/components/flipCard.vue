@@ -18,7 +18,9 @@
       >
         <!-- Message -->
         <div class="flex flex-row justify-around">
-          <span :class="{ 'animate-bounce ': isHovering && !flipped && loaded }">
+          <span
+            :class="{ 'animate-bounce': isHovering && !flipped || !loaded }"
+          >
             {{ msg }}
           </span>
         </div>
@@ -29,7 +31,7 @@
         :class="{ pointer: flipped }"
       >
         <div class="flex flex-row justify-around">
-          <span :class="{ 'animate-bounce': isHovering && flipped && loaded }">
+          <span :class="{ 'animate-bounce': isHovering && flipped || !loaded }">
             {{ msg }}
           </span>
         </div>
@@ -90,13 +92,12 @@ export default defineComponent({
 /* Hover */
 .onHover {
   transition: transform 0.1s ease-out;
-  position: relative;
 }
 .hoverL {
-  transform: rotateY(10deg);
+  transform: rotateY(10deg) rotateZ(1deg);
 }
 .hoverR {
-  transform: rotateY(170deg);
+  transform: rotateY(170deg) rotateZ(1deg);
 }
 
 /* Position the front and back side */
