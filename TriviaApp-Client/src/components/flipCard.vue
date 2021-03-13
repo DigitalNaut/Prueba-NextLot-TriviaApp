@@ -53,11 +53,12 @@ export default defineComponent({
 .flip-card-inner {
   transition: transform 0.5s;
   transform-style: preserve-3d;
+  transform-origin: right 0;
 }
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
 .flipped {
-  transform: rotateY(180deg) translateX(-100%);
+  transform: rotateY(180deg);
 }
 
 /* Position the front and back side */

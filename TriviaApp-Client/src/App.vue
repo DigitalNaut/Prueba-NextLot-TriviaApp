@@ -24,8 +24,8 @@
           :flippedState="isFlipped"
           @click="this.flipCard()"
         ></FlipCard>
-        <FactCard :msg="fact1" :lang="factLang" class="rounded-l-xl"></FactCard>
-        <FactCard :msg="fact2" :lang="factLang" class="rounded-r-xl"></FactCard>
+        <DisplayCard :msg="fact1" :lang="factLang" class="rounded-l-xl"></DisplayCard>
+        <DisplayCard :msg="fact2" :lang="factLang" class="rounded-r-xl"></DisplayCard>
       </div>
     </div>
     <FactsBoard
@@ -45,7 +45,7 @@ import { storageAvailable, StorageTypes } from "./utilities/utility";
 
 import FlipCard from "./components/flipCard.vue";
 import FactsBoard from "./components/factsBoard.vue";
-import FactCard from "./components/factCard.vue";
+import DisplayCard from "./components/displayCard.vue";
 
 export interface Fact {
   id: string;
@@ -74,7 +74,7 @@ export default defineComponent({
   components: {
     FlipCard,
     FactsBoard,
-    FactCard,
+    DisplayCard,
   },
   methods: {
     // Log errors
@@ -162,7 +162,6 @@ export default defineComponent({
         }
       });
     },
-
     async fetchPreviousFacts(userId: string): Promise<Fact[]> {
       return new Promise<Fact[]>(async (resolve, reject) => {
         try {
@@ -189,8 +188,7 @@ export default defineComponent({
         }
       });
     },
-
-    fetchNewFact(): Promise<Fact> {
+    async fetchNewFact(): Promise<Fact> {
       return new Promise<Fact>(async (resolve, reject) => {
         try {
           // Log activity

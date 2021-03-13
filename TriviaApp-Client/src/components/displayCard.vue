@@ -4,7 +4,7 @@
       <!-- Display the fact if available -->
       {{ msg ? msg : "" }}
     </span>
-    <span v-if="msg" class="m-4">
+    <span v-if="lang" class="m-4">
       {{ lang ? lang : "" }}
     </span>
   </div>
@@ -14,7 +14,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "fact-card",
+  name: "display-card",
   props: {
     msg: {
       type: String,

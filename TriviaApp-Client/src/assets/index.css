@@ -22,7 +22,7 @@
     font-family: Avenir, Helvetica, Arial, sans-serif;
   }
   .card {
-    @apply flex bg-white shadow-lg h-52 w-96;
+    @apply flex bg-white shadow-lg h-96 w-96
   }
   .cardFace {
     @apply flex flex-col justify-center text-3xl italic text-center text-indigo font-rockSalt;

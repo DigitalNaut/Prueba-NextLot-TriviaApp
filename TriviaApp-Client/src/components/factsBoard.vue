@@ -14,10 +14,11 @@
           <li v-for="fact in list" :key="fact.id">
             <ul class="p-8 m-4 text-white rounded-md bg-haiti">
               <li>{{ fact.text }}</li>
-              <span class="indented">Language: </span>
-              <li class="inline-block">{{ fact.language.toUpperCase() }}</li>
-              <li class="italic indented">
-                <a href="{{fact.permalink}}">Permalink</a>
+              <li class="inline-block text-sm">
+                <a href="{{fact.permalink}}" class="italic indented"
+                  >Permalink</a
+                >
+                - {{ fact.language.toUpperCase() }}
               </li>
             </ul>
           </li>
