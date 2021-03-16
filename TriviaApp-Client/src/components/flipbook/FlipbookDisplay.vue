@@ -1,24 +1,35 @@
 <template>
   <div
-    class="flex p-0 m-0 -mb-12 transition duration-300 transform shadow-lg cursor-pointer"
+    class="p-0 m-0 -mb-12 shadow-lg perspective"
+    :class="isNewFactLoaded ? 'cursor-pointer' : 'cursor-default'"
+    @mouseover="isHovering = true"
+    @mouseout="isHovering = false"
+    @blur="isHovering = false"
     @click="
       isNewFactLoaded && $emit('flip-card-click');
       isNewFactLoaded && onClick();
     "
   >
-    <FlipCard
-      msg="Did you know...?"
-      :flipped="isCardFlipped"
-      :loaded="loaded"
-    />
-    <FactCard
-      :fact="facts[0]"
-      class="rounded-l-xl"
-      :loaded="isNewFactLoaded || !isCardFlipped"
-    />
-    <FactCard :fact="facts[1]" 
-      class="rounded-r-xl"
-    :loaded="isNewFactLoaded || isCardFlipped" />
+    <div
+      class="flex transition duration-300 transform hover:rotateOnHover"
+    >
+      <FlipCard
+        msg="Did you know...?"
+        :flipped="isCardFlipped"
+        :loaded="loaded"
+        :isHovering="isNewFactLoaded && isHovering"
+      />
+      <FactCard
+        :fact="facts[0]"
+        class="rounded-l-xl"
+        :loaded="isNewFactLoaded || !isCardFlipped"
+      />
+      <FactCard
+        :fact="facts[1]"
+        class="rounded-r-xl"
+        :loaded="isNewFactLoaded || isCardFlipped"
+      />
+    </div>
   </div>
 </template>
 
@@ -48,6 +59,7 @@ export default defineComponent({
       } as Fact,
 
       // Flags
+      isHovering: false,
       isCardFlipped: false,
       isNewFactLoaded: false,
       loaded: false,
@@ -95,4 +107,11 @@ export default defineComponent({
 });
 </script>
 
-<style lang="postcss" scoped></style>
+<style lang="postcss" scoped>
+.perspective {
+  perspective: 1500px;
+}
+.rotateOnHover {
+  transform: rotatex(90deg);
+}
+</style>

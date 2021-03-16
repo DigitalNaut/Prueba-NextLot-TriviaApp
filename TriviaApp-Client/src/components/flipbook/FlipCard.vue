@@ -1,16 +1,11 @@
 <template>
-  <div
-    class="absolute z-10 card flip-card"
-    @mouseover="isHovering = true"
-    @mouseout="isHovering = false"
-    @blur="isHovering = false"
-  >
+  <div class="absolute z-10 card flip-card">
     <div
       class="relative flex flex-col w-full h-full flip-card-inner hover:onHover"
       :class="{
         flipAnimation: flipped,
-        'hoverL': loaded && isHovering && !flipped,
-        'hoverR': loaded && isHovering && flipped,
+        hoverL: loaded && isHovering && !flipped,
+        hoverR: loaded && isHovering && flipped,
       }"
     >
       <!-- Card Front -->
@@ -41,12 +36,12 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "FlipCard",
-  data() {
-    return {
-      isHovering: false,
-    };
-  },
+  data() {},
   props: {
+    isHovering: {
+      type: Boolean,
+      required: true,
+    },
     loaded: {
       type: Boolean,
       required: true,
@@ -67,7 +62,7 @@ export default defineComponent({
 /* The flip card container. */
 .flip-card {
   background-color: transparent;
-  perspective: 1000px; /* 3D effect */
+  perspective: 1500px; /* 3D effect */
 }
 
 /* This container is needed to position the front and back side */
@@ -86,10 +81,10 @@ export default defineComponent({
   transition: transform 0.1s ease-out;
 }
 .hoverL {
-  transform: rotateY(10deg) rotateZ(1deg);
+  transform: rotateY(10deg);
 }
 .hoverR {
-  transform: rotateY(170deg) rotateZ(1deg);
+  transform: rotateY(170deg);
 }
 
 /* Position the front and back side */

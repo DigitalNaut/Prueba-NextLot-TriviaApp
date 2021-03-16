@@ -12,8 +12,8 @@
 
     <!-- Display the fact if available -->
     <p
-      :class="loaded ? 'opacity-100' : 'hidden opacity-0'"
-      class="flex flex-col items-center justify-center italic duration-300 transform"
+      :class="loaded ? 'opacity-100 duration-500' : 'opacity-0 duration-0'"
+      class="flex flex-col items-center justify-center italic transform"
     >
       {{ fact.text }}
       <!-- Display the language -->
