@@ -35,14 +35,14 @@ async function buildUserFactOnDb(factoid: IFact): Promise<number> {
 
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(`User ID on Factoid:`, factoid.userId);
+      console.log(`User ID on Factoid:`, factoid.fact.user);
 
       // Find user from factoid
-      const user: User = await UserModel.findOneAndUpdate({ _id: factoid.userId }, {}, { new: true, upsert: true });
-      console.log(`User with ID ${factoid.userId} was: ${user}`);
+      const user: User = await UserModel.findOneAndUpdate({ _id: factoid.fact.user }, {}, { new: true, upsert: true });
+      console.log(`User with ID ${factoid.fact.user} was: ${user}`);
 
       // Create a UserFact on DB if none found
-      const userFact: UserFact = await createUserFact(factoid.userId, factoid.fact.id);
+      const userFact: UserFact = await createUserFact(factoid.fact.user, factoid.fact.id);
 
       console.log("Using UserFact:", userFact.id);
 
@@ -197,11 +197,18 @@ export async function getUserFacts(userId: string): Promise<Fact[]> {
       console.log(`Fetching User's Facts for ID ${userId}`);
 
       const userFacts = await UserFactModel.find({ User: userId }, 'Fact');
-      const factIds: string[] = userFacts.map((userFact) => userFact.Fact);
+      const factIds: string[] = userFacts.map((userFact) => {
+        return userFact.Fact;
+      });
 
       // Find the User's Facts
       const facts: Fact[] = await FactModel.find({
         '_id': { $in: factIds }
+      });
+
+      facts.forEach((fact: Fact) => {
+        fact.user = userId;
+        return fact;
       });
 
       console.log(`Found ${userFacts.length} Fact IDs for user and ${facts.length} related Facts.`);

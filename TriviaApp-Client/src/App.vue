@@ -4,23 +4,15 @@
       class="flex flex-col w-full h-full min-h-screen p-0 m-0 mt-12 align-middle place-items-center"
     >
       <Header />
-      <div class="flex p-0 m-0 -mb-12">
-        <FlipCard
-          :loaded="loadedFact"
-          msg="Did you know...?"
-          :flipped="isFlipped"
-          @click="flipCard()"
-        />
-        <DisplayCard :msg="fact1" :lang="factlang" class="rounded-l-xl" />
-        <DisplayCard :msg="fact2" :lang="factlang" class="rounded-r-xl" />
-      </div>
+      <FlipbookDisplay
+        @flip-card-click="addNewFactToFlipbook()"
+        :newFact="newestFact"
+      />
       <FactsBoard
         msg="Click on the blue card to get the facts!"
-        :list="this.factsList"
-        :loaded="loadedFacts"
-      >
-        <p>Something</p>
-      </FactsBoard>
+        :list="factsList"
+        :loaded="areFactsLoaded"
+      />
     </div>
   </div>
 </template>
@@ -31,10 +23,9 @@ import { defineComponent } from "vue";
 
 import { storageAvailable, StorageTypes } from "./utilities/utility";
 
-import FlipCard from "./components/flipCard.vue";
-import FactsBoard from "./components/factsBoard.vue";
-import DisplayCard from "./components/displayCard.vue";
-import Header from "./components/header.vue";
+import FactsBoard from "/@/components/FactsBoard.vue";
+import FlipbookDisplay from "/@/components/flipbook/FlipbookDisplay.vue";
+import Header from "/@/components/HeaderSection.vue";
 
 export interface Fact {
   id: string;
@@ -50,56 +41,25 @@ export default defineComponent({
   name: "app",
   data() {
     return {
-      loadedFacts: false,
-      loadedFact: false,
+      // Flags
+      areFactsLoaded: false,
+
+      // State
+      newestFact: {} as Fact,
       factsList: new Array<Fact>(),
-      fact1: "",
-      fact2: "It's a fact!", // Start message,
-      factlang: "",
-      isFlipped: false,
       userId: "",
       error: "",
     };
   },
   components: {
-    FlipCard,
-    FactsBoard,
-    DisplayCard,
     Header,
+    FlipbookDisplay,
+    FactsBoard,
   },
   methods: {
     // Log errors
     handleError(error: Error, msg?: string) {
       this.error = `${msg ? msg + ": " : ""}` + `${error ? error.message : ""}`;
-    },
-    displayFact(text: string, language = "") {
-      this.loadedFact = true;
-      // Flip between card displays
-      if (this.fact1 === "") {
-        this.fact1 = text;
-        this.fact2 = "";
-        return true;
-      } else {
-        this.fact2 = text;
-        this.fact1 = "";
-        this.factlang = language.toUpperCase();
-        return false;
-      }
-    },
-    async flipCard() {
-      this.loadedFact = false;
-
-      // Get a new fact
-      let fact: Fact = await this.fetchNewFact();
-
-      // Safeguard
-      if (!fact) return this.handleError(new Error("No fact received."));
-
-      // Update table list
-      this.factsList.unshift(fact);
-
-      // Display the fact
-      this.isFlipped = this.displayFact(fact.text, fact.language);
     },
     async fetchUserId(): Promise<void> {
       return new Promise<void>(async (resolve, reject) => {
@@ -114,7 +74,7 @@ export default defineComponent({
               // Otherwise, call API for new userId
               console.log("Fetching user Id...");
               const newUser = await axios
-                .get("http://localhost:3000/user/new")
+                .get("http://192.168.100.7:3000/user/new")
                 .then((value) => value.data)
                 .catch((reason) =>
                   this.handleError(
@@ -151,11 +111,13 @@ export default defineComponent({
     async fetchPreviousFacts(userId: string): Promise<Fact[]> {
       return new Promise<Fact[]>(async (resolve, reject) => {
         try {
-          console.log(`Calling http://localhost:3000/user/${userId}/facts/all`);
+          console.log(
+            `Calling http://192.168.100.7:3000/user/${userId}/facts/all`
+          );
           const previousFacts: Fact[] = await axios
             .get(`user/${userId}/facts/all`, {
               method: "GET",
-              baseURL: "http://localhost:3000",
+              baseURL: "http://192.168.100.7:3000",
               timeout: 3000,
             })
             .then((value) => {
@@ -180,33 +142,29 @@ export default defineComponent({
           // Log activity
           console.log("Fetching fact from server...");
 
-          if (!this.userId) {
-            console.log("UserId is not valid.");
-            reject(null);
-          }
+          if (!this.userId) throw new Error("UserId is not valid.");
 
+          let baseURL = "http://192.168.100.7:3000";
+
+          console.log(`Calling: GET ${baseURL}`);
           // Call local Trivia API
           const apiCall = await axios.get(`/user/${this.userId}/facts/new`, {
             method: "GET",
-            baseURL: "http://localhost:3000",
+            baseURL,
             timeout: 3000,
           });
-          const data = apiCall.data;
+          const factoid = apiCall.data;
 
           // Log results
-          console.log(`New factoid:`, data);
+          console.log(`New factoid:`, factoid);
 
           // If server error, throw error
-          if (!data) {
-            console.log(`Server response not a JSON.`);
+          if (!factoid)
             this.handleError(
-              new Error("External server error: unknown format received.")
+              new Error("External server error: Server response not a JSON.")
             );
-            reject(null);
-          } else {
-            // Resolve fact
-            resolve(data.fact);
-          }
+          // Resolve fact
+          else resolve(factoid.fact);
 
           // Handle errors & reject
         } catch (error) {
@@ -215,13 +173,30 @@ export default defineComponent({
         }
       });
     },
+    async addNewFactToFlipbook() {
+      try {
+        // Fetch new fact from server & add it first on stack
+        let aNewFact: Fact = await this.fetchNewFact();
+        this.factsList.unshift(aNewFact);
+        console.log("Added a new NewFact to Flipbook:", aNewFact.id);
+
+        // Update state
+        this.newestFact = aNewFact;
+        
+        // Error Handling
+      } catch (error) {
+        this.handleError(error, `Could not add new fact to Flipbook: ${error}`);
+      }
+    },
   },
 
   async mounted() {
+    // Get user's ID
     await this.fetchUserId();
     this.factsList = await this.fetchPreviousFacts(this.userId);
-    this.loadedFacts = true;
-    this.loadedFact = true;
+
+    // Set flags
+    this.areFactsLoaded = true;
   },
 });
 </script>

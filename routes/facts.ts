@@ -12,17 +12,15 @@ const router = express.Router();
 router.get('/user/:userId/facts/new/lang/:langId', cors(),
   async (req, res) => {
     const userId = req.params.userId;
-    try {
-      const lang = Language[req.params.langId as keyof typeof Language];
-      const langId: Language = lang;
 
-      const newFact = await fetchNewFact(userId, langId);
+    const lang = Language[req.params.langId as keyof typeof Language];
+    const langId: Language = lang;
 
-      console.log(`Trivia API responded with Fact in ${langId}:`, newFact.fact);
-      res.send(newFact);
-    } catch (error) {
+    const newFact = await fetchNewFact(userId, langId);
 
-    }
+    console.log(`Trivia API responded with Fact in ${langId}:`, newFact.fact);
+    res.status(200).send(newFact);
+
   });
 
 /* GET new Fact in any language */
@@ -36,7 +34,7 @@ router.get('/user/:userId/facts/new', cors(),
 
     // Display result
     console.log(`Trivia API responded with Fact:`, newFact.fact);
-    res.send(newFact);
+    res.status(200).send(newFact);
   });
 
 router.get('/user/:userId/facts/all', cors(),

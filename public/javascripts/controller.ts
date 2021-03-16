@@ -14,8 +14,7 @@ const uri = `https://uselessfacts.jsph.pl/${process.env.FIXED ? 'today' : 'rando
 export async function fetchNewFact(userId: string, language?: Language): Promise<IFact> {
   try {
     // Formulate composite URI
-    let customUri: string = uri;
-    customUri += language ? `?language=${language}` : "";
+    const customUri = uri + `${language ? `?language=${language}` : ""}`;
     console.log(`Calling external API: ${customUri}`)
 
     // Call API
@@ -24,15 +23,16 @@ export async function fetchNewFact(userId: string, language?: Language): Promise
 
     // Construct new Fact wrapper
     const factoid: IFact = {
-      // headers
-      userId,
       errors: factData.errors,
       // payload
       fact: factData,
     };
 
+    factoid.fact.user = userId;
+
+
     if (factoid)
-      db.storeFactoid(factoid,
+      await db.storeFactoid(factoid,
         (error: Error) => {
           if (error) throw new Error(`Could not store fact on DB: ${error}`);
           console.log("Stored the fact on DB.");
@@ -40,6 +40,6 @@ export async function fetchNewFact(userId: string, language?: Language): Promise
 
     return factoid;
   } catch (error) {
-    return { userId, errors: error, fact: null }
+    return { errors: error, fact: null }
   }
 }

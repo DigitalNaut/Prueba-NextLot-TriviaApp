@@ -19,4 +19,4 @@ Number.prototype.clamp = function(min: number, max: number) {
   return Math.min(Math.max(this, min), max);
 };
 
-export { }
+export {}

@@ -7,7 +7,7 @@
       {{ error }}
     </div>
     <button
-      class="p-2 my-4 rounded-lg text-bombai bg-haiti hover:bg-havelockBlue hover:text-haiti border-haiti"
+      class="p-2 m-2 rounded-lg text-bombai bg-haiti hover:bg-havelockBlue hover:text-haiti border-haiti"
       @click="clearUserId()"
       @v-on:submit.prevent
       :disabled="clearing === true"
@@ -19,11 +19,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-
 import { storageAvailable, StorageTypes } from "../utilities/utility";
 
 export default defineComponent({
-  name: "Header",
+  name: "HeaderSection",
   data() {
     return {
       clearing: false,

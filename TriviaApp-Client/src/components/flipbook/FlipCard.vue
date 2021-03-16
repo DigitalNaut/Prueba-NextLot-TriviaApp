@@ -1,37 +1,33 @@
 <template>
-  <div class="absolute z-10 card flip-card">
+  <div
+    class="absolute z-10 card flip-card"
+    @mouseover="isHovering = true"
+    @mouseout="isHovering = false"
+    @blur="isHovering = false"
+  >
     <div
-      class="relative flex flex-col w-full h-full flip-card-inner"
-      @mouseover="isHovering = true"
-      @mouseout="isHovering = false"
-      @blur="isHovering = false"
+      class="relative flex flex-col w-full h-full flip-card-inner hover:onHover"
       :class="{
         flipAnimation: flipped,
-        'hoverL onHover': loaded && isHovering && !flipped,
-        'hoverR onHover': loaded && isHovering && flipped,
+        'hoverL': loaded && isHovering && !flipped,
+        'hoverR': loaded && isHovering && flipped,
       }"
     >
-      <!-- Front Card -->
-      <div
-        class="text-white cardFace flip-card-front rounded-l-xl bg-indigo"
-        :class="{ pointer: !flipped }"
-      >
+      <!-- Card Front -->
+      <div class="text-white cardFace flip-card-front rounded-l-xl bg-indigo">
         <!-- Message -->
         <div class="flex flex-row justify-around">
-          <span
-            :class="{ 'animate-bounce': isHovering && !flipped || !loaded }"
-          >
+          <span :class="{ 'animate-bounce': loaded && isHovering && !flipped }">
             {{ msg }}
           </span>
         </div>
       </div>
-      <!-- Back Card -->
-      <div
-        class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti"
-        :class="{ pointer: flipped }"
-      >
+      <!-- Card Back -->
+      <div class="cardFace flip-card-back rounded-r-xl bg-bombai text-haiti">
+        <!-- Message -->
+
         <div class="flex flex-row justify-around">
-          <span :class="{ 'animate-bounce': isHovering && flipped || !loaded }">
+          <span :class="{ 'animate-bounce': loaded && isHovering && flipped }">
             {{ msg }}
           </span>
         </div>
@@ -44,7 +40,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "flip-card",
+  name: "FlipCard",
   data() {
     return {
       isHovering: false,
@@ -68,10 +64,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.pointer {
-  cursor: pointer;
-}
-
 /* The flip card container. */
 .flip-card {
   background-color: transparent;
