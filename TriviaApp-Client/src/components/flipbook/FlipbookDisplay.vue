@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-0 m-0 -mb-12 shadow-lg perspective"
+    class="p-0 m-0 -mb-12 perspective"
     :class="isNewFactLoaded ? 'cursor-pointer' : 'cursor-default'"
     @mouseover="isHovering = true"
     @mouseout="isHovering = false"
@@ -11,13 +11,14 @@
     "
   >
     <div
-      class="flex transition duration-300 transform hover:rotateOnHover"
+      class="flex transition duration-300 transform shadow-lg"
+      :class="isHovering ? 'rotateOnHover' : ''"
     >
       <FlipCard
-        msg="Did you know...?"
+        :msg="userLanguage === 'de' ? 'Usstest du...?' : 'Did you know...?'"
         :flipped="isCardFlipped"
         :loaded="loaded"
-        :isHovering="isNewFactLoaded && isHovering"
+        :hovered="isNewFactLoaded && isHovering"
       />
       <FactCard
         :fact="facts[0]"
@@ -82,6 +83,10 @@ export default defineComponent({
       type: Object as () => Fact,
       required: true,
     },
+    userLanguage: {
+      type: String,
+      required: false,
+    },
   },
 
   mounted() {
@@ -112,6 +117,7 @@ export default defineComponent({
   perspective: 1500px;
 }
 .rotateOnHover {
-  transform: rotatex(90deg);
+  transform: rotateX(10deg);
+  @apply shadow-2xl;
 }
 </style>

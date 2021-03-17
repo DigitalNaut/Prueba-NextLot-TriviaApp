@@ -13,12 +13,12 @@
     <!-- Display the fact if available -->
     <p
       :class="loaded ? 'opacity-100 duration-500' : 'opacity-0 duration-0'"
-      class="flex flex-col items-center justify-center italic transform"
+      class="flex flex-col items-center justify-center transform"
     >
       {{ fact.text }}
       <!-- Display the language -->
       <span
-        class="box-content p-1 m-4 text-xs italic text-white rounded-full bg-indigo"
+        class="box-content p-1 m-4 text-xs text-white rounded-full bg-indigo"
         :class="loaded && fact.language ? 'opacity-100' : 'opacity-0'"
       >
         {{ fact.language.toUpperCase() }}
@@ -35,7 +35,7 @@ export default defineComponent({
   name: "FactCard",
   props: {
     fact: {
-      type: Object as () => Fact,
+      type: Object as () => Fact || undefined,
       required: true,
     },
     loaded: {

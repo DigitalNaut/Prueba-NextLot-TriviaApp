@@ -12,7 +12,7 @@
       <div v-if="list.length" class="flex-row text-right">
         <!-- Counter -->
         <span class="px-4 py-2 mr-4 text-white rounded-full lex bg-indigo">
-          Number of facts:
+          {{userLanguage === 'de' ? 'Anzahl der Fakten': 'Number of facts'}}:
           <!-- Number -->
           <span class="ml-3 w-7 h-7">
             {{ list.length }}
@@ -24,7 +24,11 @@
 
         <!-- List of Fact Cards -->
         <ol>
-          <li v-for="fact in list" :key="fact.id">
+          <li
+            v-for="fact in list"
+            :key="fact.id"
+            class="transition transform opacity-90"
+          >
             <!-- Fact card -->
             <ol
               class="px-4 py-12 m-8 text-xl text-center text-white rounded-md shadow-md md:px-8 lg:px-16 bg-haiti"
@@ -78,6 +82,10 @@ export default defineComponent({
     msg: {
       required: true,
       type: String,
+    },
+    userLanguage: {
+      type: String,
+      required: false,
     },
     list: {
       required: true,

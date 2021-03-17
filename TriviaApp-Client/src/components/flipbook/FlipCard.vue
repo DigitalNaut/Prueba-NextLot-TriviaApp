@@ -4,15 +4,15 @@
       class="relative flex flex-col w-full h-full flip-card-inner hover:onHover"
       :class="{
         flipAnimation: flipped,
-        hoverL: loaded && isHovering && !flipped,
-        hoverR: loaded && isHovering && flipped,
+        hoverL: loaded && hovered && !flipped,
+        hoverR: loaded && hovered && flipped,
       }"
     >
       <!-- Card Front -->
       <div class="text-white cardFace flip-card-front rounded-l-xl bg-indigo">
         <!-- Message -->
         <div class="flex flex-row justify-around">
-          <span :class="{ 'animate-bounce': loaded && isHovering && !flipped }">
+          <span :class="{ 'animate-bounce': loaded && hovered && !flipped }">
             {{ msg }}
           </span>
         </div>
@@ -22,7 +22,7 @@
         <!-- Message -->
 
         <div class="flex flex-row justify-around">
-          <span :class="{ 'animate-bounce': loaded && isHovering && flipped }">
+          <span :class="{ 'animate-bounce': loaded && hovered && flipped }">
             {{ msg }}
           </span>
         </div>
@@ -36,9 +36,8 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "FlipCard",
-  data() {},
   props: {
-    isHovering: {
+    hovered: {
       type: Boolean,
       required: true,
     },

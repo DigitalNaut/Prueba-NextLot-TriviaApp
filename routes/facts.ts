@@ -12,13 +12,13 @@ const router = express.Router();
 router.get('/user/:userId/facts/new/lang/:langId', cors(),
   async (req, res) => {
     const userId = req.params.userId;
+    const langId = req.params.langId.toUpperCase();
 
-    const lang = Language[req.params.langId as keyof typeof Language];
-    const langId: Language = lang;
+    const language = Language[langId as keyof typeof Language]; // String to enum conversion for url param
 
-    const newFact = await fetchNewFact(userId, langId);
+    const newFact = await fetchNewFact(userId, language);
 
-    console.log(`Trivia API responded with Fact in ${langId}:`, newFact.fact);
+    console.log(`Trivia API responded with Fact in ${language}:`, newFact.fact);
     res.status(200).send(newFact);
 
   });
